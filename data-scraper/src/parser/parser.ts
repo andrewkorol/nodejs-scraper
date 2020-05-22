@@ -1,23 +1,80 @@
-import { SOURCES } from "../helpers/sources";
+import { OpenGraphModel } from "../models/open-graph.model";
+import { Mapper } from "../helpers/mapper";
+import { Product } from "../entity/product-entity";
 
 var sitemaps = require('sitemap-stream-parser');
+var ogs = require('open-graph-scraper');
 
 export class Parser {
+    public productEntities: Array<Product>;
+
     private sitemapUrls: Array<string> = [];
+    private productList: Array<OpenGraphModel> = [];
 
-    public parse() {
-        this.parseSitemap(SOURCES[0]);
+    public async parse(sitemapUrl: string): Promise<Array<Product>> {
+        console.log(sitemapUrl);
+        return this.getProductsFromUrl(sitemapUrl);
     }
 
-    private parseSitemap(url: string) {
-        sitemaps.parseSitemaps(url, (url) => { this.sitemapUrls.push(url); }, (err, sitemaps) => {
-            const onlyProducts = this.sitemapUrls.filter((url) => {
-                if (url.includes('product')) {
-                    return url;
-                }
+    private getProductsFromUrl(url: string): Promise<Array<Product>> {
+        return new Promise((resolve, reject) => {
+            sitemaps.parseSitemaps(url, (url) => { this.sitemapUrls.push(url); }, async (err, sitemaps) => {
+                this.sitemapUrls = this.sitemapUrls.filter((url) => {
+                    if (url.includes('product')) {
+                        return url;
+                    }
+                });
+    
+                await this.scrapeAllSource();
+    
+                console.log('loadad all products')
+                const entities = this.productList.map((product) => {
+                    return Mapper.customerToEntity(product);
+                })
+    
+                 resolve(entities)
             });
-
-            console.log(onlyProducts)
-        });
+        })
+        
     }
+
+    private parseProductLink(links: string[]) {
+        return new Promise((resolve, reject) => {
+            links.forEach((link, index) => {
+                const options = { 'url': link };
+
+                ogs(options)
+                    .then((results: { data: OpenGraphModel }) => {
+                        this.productList.push(results.data);
+                        console.log(`For  ${this.productList.length}`)
+
+                        if (index === links.length - 1) {
+                            resolve();
+                        }
+                    })
+                    .catch(function (error) {
+                    
+                    });
+            })
+        })
+    }
+
+    private scrapeAllSource(): Promise<void> {
+        return new Promise((resolve, reject) => {
+            const interval = setInterval(async () => {
+                const spliseCount = this.sitemapUrls.length < 10 ? this.sitemapUrls.length : 10;
+                const urlsGroup: Array<string> = this.sitemapUrls.splice(0, spliseCount);
+
+                await this.parseProductLink(urlsGroup);
+
+                if (this.sitemapUrls.length === 0) {
+                    clearInterval(interval)
+                    resolve();
+                }
+            }, 2000);
+        });
+
+    }
+
+
 }

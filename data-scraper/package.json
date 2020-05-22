@@ -9,6 +9,7 @@
    },
    "dependencies": {
       "mysql": "^2.14.1",
+      "open-graph-scraper": "^3.6.2",
       "reflect-metadata": "^0.1.10",
       "sitemap-stream-parser": "^1.7.0",
       "typeorm": "0.2.25"

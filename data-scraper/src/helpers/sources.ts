@@ -1,3 +1,5 @@
 export const SOURCES = [
-    'https://cocoandkinney.com/sitemap.xml'
+    'https://nonahandbags.com/sitemap.xml',
+    'https://cocoandkinney.com/sitemap.xml',
+    'https://rixo.co.uk/sitemap.xml'
 ]

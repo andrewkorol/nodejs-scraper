@@ -4,18 +4,21 @@
     "port": 3306,
     "username": "root",
     "password": "Qwerty12345!",
-    "database": "parseDb",
+    "database": "parsedb",
     "synchronize": true,
     "logging": false,
     "entities": [
-        "src/entities/**/*.ts"
+       "src/entity/**/*.ts"
+    ],
+    "migrations": [
+       "src/migration/**/*.ts"
     ],
     "subscribers": [
-        "src/subscriber/**/*.ts"
+       "src/subscriber/**/*.ts"
     ],
     "cli": {
-        "entitiesDir": "src/entity",
-        "migrationsDir": "src/migration",
-        "subscribersDir": "src/subscriber"
+       "entitiesDir": "src/entity",
+       "migrationsDir": "src/migration",
+       "subscribersDir": "src/subscriber"
     }
-}
+ }
