@@ -46,7 +46,7 @@ export class Parser {
                 ogs(options)
                     .then((results: { data: OpenGraphModel }) => {
                         this.productList.push(results.data);
-                        console.log(`For  ${this.productList.length}`)
+                        console.log(`collected  ${this.productList.length} records`)
 
                         if (index === links.length - 1) {
                             resolve();

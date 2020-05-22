@@ -19,21 +19,23 @@ export class DataStorage {
 
         const repository = this.connection.getRepository(Product);
 
+        console.log('inserting in DB');
         return new Promise((resolve, reject) => {
             const interval = setInterval(async () => {
-                const spliseCount = entities.length < 10 ? entities.length : 10;
+                const spliseCount = entities.length < 10 ? entities.length : 100;
                 const entitiesToInsert = entities.splice(0, spliseCount);
 
+                console.log(`${entities.length} left`);
                 repository.insert(entitiesToInsert)
-                .then(() => {
-                    if (entities.length === 0) {
-                        clearInterval(interval)
-                        resolve();
-                    }
-                })
-                .catch((ex) => {})
+                    .then(() => {
+                        if (entities.length === 0) {
+                            clearInterval(interval)
+                            resolve();
+                        }
+                    })
+                    .catch((ex) => { })
 
-               
+
             }, 3000);
         });
 
