@@ -27,7 +27,6 @@ export class Parser {
     
                 await this.scrapeAllSource();
     
-                console.log('loadad all products')
                 const entities = this.productList.map((product) => {
                     return Mapper.customerToEntity(product);
                 })
