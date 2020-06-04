@@ -2,9 +2,7 @@ import { Connection, createConnection, getConnection } from "typeorm";
 import { injectable } from "inversify";
 
 //entities
-import { Product } from "../entities/product-entity";
-import { Domain } from '../entities/domain-entity';
-import { Link } from "../entities/link-entity";
+import { Product, Domain, Link } from "../entities"
 
 //interfaces
 import { IDataStorage } from "../container/interfaces/data-storage.interface";

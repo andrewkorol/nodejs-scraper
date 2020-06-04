@@ -21,11 +21,3 @@ domainCrawl.crawl()
 //             .catch((ex) => console.log(ex))
 //             .then(() => console.log(`done with ${SOURCES[0]}`))
 //     })
-
-
-
-
-
-
-
-
