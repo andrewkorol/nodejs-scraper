@@ -1,19 +1,26 @@
 import { Connection, createConnection, getConnection } from "typeorm";
+import { injectable } from "inversify";
 
+//entities
 import { Product } from "../entities/product-entity";
 import { Domain } from '../entities/domain-entity';
-import { Mapper } from "../helpers/mappers/mapper";
 import { Link } from "../entities/link-entity";
 
-export class DataStorage {
+//interfaces
+import { IDataStorage } from "../container/interfaces/data-storage.interface";
+
+//helpers
+import { Mapper } from "../helpers/mappers/mapper";
+
+@injectable()
+export class DataStorage implements IDataStorage {
     private connection: Connection;
 
     public async init(): Promise<void> {
         try {
             this.connection = await createConnection();
-            console.log("connected successfully")
         } catch (ex) {
-            console.error(`Error: ${ex.message}`)
+            this.connection = getConnection();
         }
     }
 
@@ -50,7 +57,7 @@ export class DataStorage {
         const linksRepository = this.connection.getRepository(Link);
 
         console.log('updating links');
-        
+
         try {
             await linksRepository.insert(links)
         }  catch (ex) {

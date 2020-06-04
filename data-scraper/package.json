@@ -8,9 +8,10 @@
       "typescript": "3.3.3333"
    },
    "dependencies": {
+      "inversify": "^5.0.1",
       "mysql": "^2.14.1",
       "open-graph-scraper": "^3.6.2",
-      "reflect-metadata": "^0.1.10",
+      "reflect-metadata": "^0.1.13",
       "sitemap-stream-parser": "^1.7.0",
       "typeorm": "0.2.25"
    },
