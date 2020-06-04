@@ -1,6 +1,6 @@
-import { OpenGraphModel } from "../models/open-graph.model";
-import { Mapper } from "../helpers/mapper";
-import { Product } from "../entity/product-entity";
+import { OpenGraphModel } from "../../models/open-graph.model";
+import { Mapper } from "../../helpers/mappers/mapper";
+import { Product } from "../../entities/product-entity";
 
 var sitemaps = require('sitemap-stream-parser');
 var ogs = require('open-graph-scraper');
@@ -24,17 +24,17 @@ export class Parser {
                         return url;
                     }
                 });
-    
+
                 await this.scrapeAllSource();
-    
+
                 const entities = this.productList.map((product) => {
-                    return Mapper.customerToEntity(product);
+                    return Mapper.OGModelToEntity(product);
                 })
-    
-                 resolve(entities)
+
+                resolve(entities)
             });
         })
-        
+
     }
 
     private parseProductLink(links: string[]) {
@@ -45,14 +45,14 @@ export class Parser {
                 ogs(options)
                     .then((results: { data: OpenGraphModel }) => {
                         this.productList.push(results.data);
-                        console.log(`collected  ${this.productList.length} records`)
+                        console.log(`collected ${this.productList.length} records`)
 
                         if (index === links.length - 1) {
                             resolve();
                         }
                     })
                     .catch(function (error) {
-                    
+
                     });
             })
         })
