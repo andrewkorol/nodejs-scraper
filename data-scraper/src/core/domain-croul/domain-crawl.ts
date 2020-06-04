@@ -16,11 +16,13 @@ export class DomainCrawl {
                         return url;
                     }
                 });
-
+                
                 linkEntities = Mapper.sitemapUrlsToEntity(sitemapUrls, url);
+
+                resolve(linkEntities)
             })
 
-            resolve(linkEntities)
+            
         })
     }
 
