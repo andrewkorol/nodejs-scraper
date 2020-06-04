@@ -41,16 +41,16 @@ export class DataStorage {
         await this.init();
 
         const domainsRepository = this.connection.getRepository(Domain);
-
         const domainEntity = await domainsRepository.findOne(domain);
 
         links.forEach((link) => {
             link.domain = domainEntity;
         });
 
-        console.log(links);
         const linksRepository = this.connection.getRepository(Link);
 
+        console.log('updating links');
+        
         try {
             await linksRepository.insert(links)
         }  catch (ex) {

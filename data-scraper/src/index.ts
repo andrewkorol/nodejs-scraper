@@ -13,9 +13,8 @@ dataStorage.getDomains()
     .then((domains: Domain[]) => {
         const domainCrawl = new DomainCrawl();
         domainCrawl.crawl(domains[0].id)
-            .then((linksAsEntities: Link[]) => {
-                console.log(linksAsEntities);
-
+            .then((linksData: { linkEntities: Array<Link>, domain: string }) => {
+                dataStorage.updateDomainLinks(linksData.linkEntities, linksData.domain)
             })
     })
 

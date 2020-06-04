@@ -5,24 +5,26 @@ import { resolve } from "url";
 var sitemaps = require('sitemap-stream-parser');
 
 export class DomainCrawl {
-
-    public crawl(url: string): Promise<Array<Link>> {
+    public crawl(url: string): Promise<{ linkEntities: Array<Link>, domain: string }> {
         return new Promise((resolve, reject) => {
             let sitemapUrls = [];
-            let linkEntities: Array<Link>;
+
             sitemaps.parseSitemaps(url, (url) => { sitemapUrls.push(url); }, (err, sitemaps) => {
+                if (err) {
+                    reject(err);
+                }
+
                 sitemapUrls = sitemapUrls.filter((url) => {
                     if (url.includes('product')) {
                         return url;
                     }
                 });
-                
-                linkEntities = Mapper.sitemapUrlsToEntity(sitemapUrls, url);
 
-                resolve(linkEntities)
+                const linkEntities: Array<Link> = Mapper.sitemapUrlsToEntity(sitemapUrls, url);
+
+                resolve(Object.assign({}, { linkEntities, domain: url }));
             })
 
-            
         })
     }
 
