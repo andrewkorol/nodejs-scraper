@@ -20,14 +20,14 @@ export class DomainCrawl implements IDomainCrawl {
         this._dataStorage = dataStorage;
     }
 
-    public async crawl(): Promise<void> {
-        const domains = await this.getDomains();
+    // public async crawl(): Promise<Array<Domain>> {
+    //     return await this.getDomains();
 
-        //TODO: crawl from all domains
-        await this.crawlByUrl(domains[0].id);
-    }
+    //     //TODO: crawl from all domains
+    //     // await this.crawlByUrl(domains[0].id);
+    // }
 
-    private crawlByUrl(url: string): Promise<void> {
+    public crawlByUrl(url: string): Promise<void> {
         return new Promise((resolve, reject) => {
             let sitemapUrls = [];
 
@@ -51,7 +51,7 @@ export class DomainCrawl implements IDomainCrawl {
         })
     }
 
-    private async getDomains(): Promise<Array<Domain>> {
+    public async getDomains(): Promise<Array<Domain>> {
         return await this._dataStorage.getDomains();
     }
 

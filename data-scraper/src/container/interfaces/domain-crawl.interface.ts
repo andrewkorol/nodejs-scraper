@@ -1,3 +1,7 @@
+import { Domain } from "../../entities";
+
+
 export interface IDomainCrawl {
-     crawl(): Promise<void>;
+    crawlByUrl(url: string): Promise<void>
+    getDomains(): Promise<Array<Domain>>
 }
