@@ -1,4 +1,5 @@
 import "reflect-metadata";
+var amqp = require('amqplib');
 
 import { appContainer } from "./container/inversify.container";
 
@@ -9,9 +10,6 @@ import { TYPES } from "./container/inversify-helpers/TYPES";
 
 
 const domainCrawl = appContainer.get<IDomainCrawl>(TYPES.IDomainCrawl);
-// domainCrawl.crawl()
-//     .catch((reason) => console.log(reason))
-//     .then(() => { })
 
 // const parser = new Parser();
 // parser.parse(SOURCES[0])
@@ -22,7 +20,6 @@ const domainCrawl = appContainer.get<IDomainCrawl>(TYPES.IDomainCrawl);
 //             .then(() => console.log(`done with ${SOURCES[0]}`))
 //     })
 
-var amqp = require('amqplib');
 
 const opt = {
     protocol: 'amqp',
@@ -63,71 +60,3 @@ open.then(function (conn) {
         });
     });
 }).catch(console.warn);
-
-// var connectionListen = amqp.createConnection(opt);
-
-// // add this for better debuging
-// connectionListen.on('error', function (e) {
-//     console.log("Error from amqp: ", e);
-// });
-
-// var _queue = null;
-// var _consumerTag = null;
-
-// connectionListen.on('tag.change', function (event) {
-//     if (_consumerTag === event.oldConsumerTag) {
-//         _consumerTag = event.consumerTag;
-//         // Consider unsubscribing from the old tag just in case it lingers
-//         _queue.unsubscribe(event.oldConsumerTag);
-//     }
-// });
-
-// // Initialize the exchange, queue and subscription
-// connectionListen.on('ready', function () {
-
-//     connectionListen.queue('my-queue', function (queue) {
-//         _queue = queue;
-
-//         // Subscribe to the queue
-//         queue
-//             .subscribe(function (message) {
-//                 // Handle message here
-//                 console.log('before message')
-//                 console.log('Got message', message.toString());
-//                 queue.shift(false, false);
-//             })
-//             .addCallback(function (res) {
-//                 // Hold on to the consumer tag so we can unsubscribe later
-//                 _consumerTag = res.consumerTag;
-//             })
-//             ;
-//     });
-
-// });
-
-// const connectionProduser = amqp.createConnection(opt);
-
-// connectionProduser.on('ready', function () {
-//     let msg = 'Test message';
-//     connectionProduser.publish('my-queue', Buffer.from(msg), {
-//         persistent: false
-//       }, function(res) {
-//           console.log('works here');
-//         console.log(res);
-//       })
-
-// });
-
-// // Some time in the future, you'll want to unsubscribe or shutdown 
-// setTimeout(function () {
-//     if (_queue) {
-//         _queue
-//             .unsubscribe(_consumerTag)
-//             .addCallback(function () {
-//                 // unsubscribed
-//             })
-//             ;
-//     } else {
-//         // unsubscribed
-//     }
-// }, 60000);
