@@ -10,13 +10,19 @@ export class Link {
         length: 12000,
         nullable: true
     })
-    htmlFirstPart: string;
+    html: string;
 
-    @Column({
-        length: 12000,
-        nullable: true
-    })
-    htmlSecondPart: string;
+    // @Column({
+    //     length: 12000,
+    //     nullable: true
+    // })
+    // htmlFirstPart: string;
+
+    // @Column({
+    //     length: 12000,
+    //     nullable: true
+    // })
+    // htmlSecondPart: string;
 
     @ManyToOne(type => Domain, domain => domain.links)
     domain: Domain;

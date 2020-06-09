@@ -3,6 +3,9 @@ import { inject, injectable } from "inversify";
 //interfaces
 import { IDataStorage, IQueueService, IStartup } from "../container/interfaces";
 
+//entities
+import { Domain } from "../entities";
+
 //helpers
 import { TYPES } from "../container/inversify-helpers/TYPES";
 import { SOURCES } from "../helpers/sources";
@@ -21,11 +24,15 @@ export class Startup implements IStartup {
     }
 
     public async start(): Promise<void> {
-        // await this._dataStorage.updateDomains(SOURCES);
-        // const domains = await this._dataStorage.getDomains();
+        await this._dataStorage.updateDomains(SOURCES);
+        const domains: Array<Domain> = await this._dataStorage.getDomains();
 
-        // this._queueService.produse(domains);
-        // this._queueService.consume(crawl);
+        const domainUrls = domains.map((domain: Domain) => {
+            return `${domain.id}/sitemap.xml`;
+        })
+
+        this._queueService.produse(domainUrls);
+        this._queueService.consume(crawl);
 
         this._queueService.produse(['https://nonahandbags.com/products/fanny-pack-black']);
         this._queueService.consume(collectHtml);

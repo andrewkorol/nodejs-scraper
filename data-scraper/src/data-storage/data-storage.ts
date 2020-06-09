@@ -76,13 +76,20 @@ export class DataStorage implements IDataStorage {
         const linksRepository = this.connection.getRepository(Link);
 
         let linkEntity = await linksRepository.findOne(link);
+
+        if(!linkEntity) {
+            console.log('No such entity');
+            
+            return;
+        }
+
         let htmlAsString = JSON.stringify(html);
 
         const htmlFirst = htmlAsString.slice(0, htmlAsString.length/2);
         const htmlSecond = htmlAsString.slice(htmlAsString.length/2);
         
-        linkEntity.htmlFirstPart = htmlFirst;
-        linkEntity.htmlSecondPart = htmlSecond;
+        // linkEntity.htmlFirstPart = htmlFirst;
+        // linkEntity.htmlSecondPart = htmlSecond;
 
         console.log('linkEntity', linkEntity);
 

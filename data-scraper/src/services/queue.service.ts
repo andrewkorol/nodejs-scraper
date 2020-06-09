@@ -26,6 +26,7 @@ export class QueueService {
         await ch.assertQueue(this.queueName);
         
         messages.forEach((mes) => {
+            console.log(mes)
             return ch.sendToQueue(this.queueName, Buffer.from(mes));
         })
     }
