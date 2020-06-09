@@ -10,6 +10,7 @@ export interface IDataStorage {
     
       updateDomainLinks(links: Link[], domain: string): Promise<void> 
     
-      updateOrInsertProduct(entities: Product[]) 
-
+      updateOrInsertProduct(entities: Product[]): Promise<void> 
+      
+      updateDomainLink(link: string, html: string): Promise<void>
 }

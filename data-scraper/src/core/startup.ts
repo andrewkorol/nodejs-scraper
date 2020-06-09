@@ -7,6 +7,7 @@ import { IDataStorage, IQueueService, IStartup } from "../container/interfaces";
 import { TYPES } from "../container/inversify-helpers/TYPES";
 import { SOURCES } from "../helpers/sources";
 import { crawl } from "../helpers/queue-handlers.ts/crawl.handler";
+import { collectHtml } from "../helpers/queue-handlers.ts/collect-html.handler";
 
 @injectable()
 export class Startup implements IStartup {
@@ -20,10 +21,15 @@ export class Startup implements IStartup {
     }
 
     public async start(): Promise<void> {
-        await this._dataStorage.updateDomains(SOURCES);
-        const domains = await this._dataStorage.getDomains();
+        // await this._dataStorage.updateDomains(SOURCES);
+        // const domains = await this._dataStorage.getDomains();
 
-        this._queueService.produse(domains);
-        this._queueService.consume(crawl);
+        // this._queueService.produse(domains);
+        // this._queueService.consume(crawl);
+
+        this._queueService.produse(['https://nonahandbags.com/products/fanny-pack-black']);
+        this._queueService.consume(collectHtml);
+
+        // collectHtml('https://nonahandbags.com/products/fanny-pack-black');
     }
 }

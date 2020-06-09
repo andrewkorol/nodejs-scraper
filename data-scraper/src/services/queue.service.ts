@@ -20,14 +20,13 @@ export class QueueService {
         this.connection = amqp.connect(this.options);
     }
 
-    public async produse(messages): Promise<void>  {
+    public async produse(messages: Array<any>): Promise<void>  {
         const conn = await this.connection;
         const ch = await conn.createChannel();
         await ch.assertQueue(this.queueName);
-
-        messages.forEach((link) => {
-            const sitemapUrl = `${link.id}/sitemap.xml`
-            return ch.sendToQueue(this.queueName, Buffer.from(sitemapUrl));
+        
+        messages.forEach((mes) => {
+            return ch.sendToQueue(this.queueName, Buffer.from(mes));
         })
     }
 
