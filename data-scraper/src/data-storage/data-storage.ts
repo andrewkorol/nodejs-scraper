@@ -1,18 +1,25 @@
 import { Connection, createConnection, getConnection } from "typeorm";
-import { injectable } from "inversify";
+import { injectable, inject } from "inversify";
 
 //entities
 import { Product, Domain, Link } from "../entities"
 
 //interfaces
-import { IDataStorage } from "../container/interfaces/data-storage.interface";
+import { IDataStorage,IDomainTechnology } from "../container/interfaces";
 
 //helpers
 import { Mapper } from "../helpers/mappers/mapper";
+import { TYPES } from "../container/inversify-helpers/TYPES";
+import { DomainTechnology } from "../services/domain-technology.service";
 
 @injectable()
 export class DataStorage implements IDataStorage {
     private connection: Connection;
+    private _domainTechnology: IDomainTechnology;
+
+    constructor(@inject(TYPES.IDomainTechnology) domainTechnology: DomainTechnology) {
+        this._domainTechnology = domainTechnology;
+    }
 
     public async init(): Promise<void> {
         try {
@@ -26,14 +33,15 @@ export class DataStorage implements IDataStorage {
         await this.init();
 
         const repository = this.connection.getRepository(Domain);
-        const domains: Array<Domain> =  Mapper.domainListToEntity(sources);
-
+        const domains: Array<Domain> =  await this._domainTechnology.getDomainEntities(sources);
+        
         try {
             await repository.insert(domains)
         }  catch (ex) {
             console.log('This domain already exists!');
         }
     }
+    
     public async getDomains(): Promise<Domain[]> {
         await this.init();
 
