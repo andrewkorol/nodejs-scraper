@@ -29,12 +29,6 @@ export class DomainCrawl implements IDomainCrawl {
                     reject(err);
                 }
 
-                sitemapUrls = sitemapUrls.filter((url) => {
-                    if (url.includes('product')) {
-                        return url;
-                    }
-                });
-
                 const linkEntities: Array<Link> = Mapper.sitemapUrlsToEntity(sitemapUrls, url);
 
                 this._dataStorage.updateDomainLinks(linkEntities, url)
