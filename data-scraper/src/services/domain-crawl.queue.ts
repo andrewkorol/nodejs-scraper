@@ -42,7 +42,7 @@ export class DomainCrawlQueue implements IDomainCrawlQueue {
                 const messages = await this._dataStorage.getDomains();
 
                 messages.forEach((link) => {
-                    return ch.sendToQueue(this.queueName, Buffer.from(`${link.id}/sitemap.xml`));
+                    return ch.sendToQueue(this.queueName, Buffer.from(link.id));
                 })
             });
         }).catch(console.warn);
@@ -57,7 +57,7 @@ export class DomainCrawlQueue implements IDomainCrawlQueue {
                     if (msg !== null) {
                         const messageContent = msg.content.toString();
                         console.log(messageContent);
-                        await this._domainCrawl.crawlByUrl(messageContent);
+                        await this._domainCrawl.crawl(messageContent);
                         ch.ack(msg);
                     }
                 });

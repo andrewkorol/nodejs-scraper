@@ -1,9 +1,13 @@
 import { inject, injectable } from "inversify";
 
 var sitemaps = require('sitemap-stream-parser');
+const axios = require('axios');
+const getHrefs = require('get-hrefs');
+
+var Crawler = require("crawler");
 
 //entities
-import { Link, Domain } from "../../entities";
+import { Link } from "../../entities";
 
 //interfaces
 import { IDataStorage, IDomainCrawl } from "../../container/interfaces";
@@ -20,13 +24,23 @@ export class DomainCrawl implements IDomainCrawl {
         this._dataStorage = dataStorage;
     }
 
-    public crawlByUrl(url: string): Promise<void> {
+    public crawl(url: string): void {
+         this._crawl(url);
+    }
+
+    private _crawl(url: string): Promise<void> {
         return new Promise((resolve, reject) => {
             let sitemapUrls = [];
 
-            sitemaps.parseSitemaps(url, (url) => { sitemapUrls.push(url); }, (err, sitemaps) => {
+            console.log.toString()
+            sitemaps.parseSitemaps(`${url}/sitemap.xml`, (url) => { sitemapUrls.push(url); }, async (err, sitemaps) => {
                 if (err) {
+                    console.log(err);
                     reject(err);
+                }
+
+                if(sitemapUrls.length === 0) {
+                    sitemapUrls = await this.crawlByStartPage(url);
                 }
 
                 const linkEntities: Array<Link> = Mapper.sitemapUrlsToEntity(sitemapUrls, url);
@@ -38,8 +52,12 @@ export class DomainCrawl implements IDomainCrawl {
         })
     }
 
-    public async getDomains(): Promise<Array<Domain>> {
-        return await this._dataStorage.getDomains();
+    private async crawlByStartPage(url) {
+     const res = await axios.get(url);
+     const links = getHrefs(res.data);
+
+     return links;
     }
+
 
 }

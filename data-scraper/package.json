@@ -10,11 +10,15 @@
    "dependencies": {
       "amqplib": "^0.5.6",
       "axios": "^0.19.2",
+      "cheerio": "^1.0.0-rc.3",
+      "crawler": "^1.2.2",
+      "get-hrefs": "^4.0.0",
       "inversify": "^5.0.1",
       "lodash": "^4.17.15",
       "mysql": "^2.14.1",
       "open-graph-scraper": "^3.6.2",
       "reflect-metadata": "^0.1.13",
+      "request-promise": "^4.2.5",
       "sitemap-stream-parser": "^1.7.0",
       "typeorm": "0.2.25"
    },
