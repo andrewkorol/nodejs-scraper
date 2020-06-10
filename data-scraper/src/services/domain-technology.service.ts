@@ -5,16 +5,19 @@ const axios = require('axios');
 
 import { Domain } from "../entities";
 import { DomainTechnologyEnum } from "../helpers/domain-technology.enum"
+import { Source } from "../models/sources.model";
+import { IDomainTechnology } from "../container/interfaces";
 
 @injectable()
-export class DomainTechnology {
-    public async getDomainEntities(sources: Array<string>): Promise<Array<Domain>> {
+export class DomainTechnology implements IDomainTechnology {
+    public async getDomainEntities(sources: Array<Source>): Promise<Array<Domain>> {
         let domains: Array<Domain> = new Array<Domain>()
 
         for (const source of sources) {
             let domain = new Domain();
 
-            domain.id = source;
+            domain.id = source.domainUrl;
+            domain.productRegExp = source.productRegExp;
 
             const technology = await this.getDomainTechnology(domain.id);
             domain.technology = technology ? technology : DomainTechnologyEnum.OTHER;

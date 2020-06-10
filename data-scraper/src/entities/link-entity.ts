@@ -7,7 +7,8 @@ export class Link {
     id: string;
 
     @Column({
-        length: 12000,
+        type: "longtext",
+        // length: 12000,
         nullable: true
     })
     html: string;
@@ -19,7 +20,7 @@ export class Link {
     // htmlFirstPart: string;
 
     // @Column({
-    //     length: 12000,
+    //     // length: 6000,
     //     nullable: true
     // })
     // htmlSecondPart: string;

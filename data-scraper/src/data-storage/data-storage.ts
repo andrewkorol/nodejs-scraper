@@ -5,12 +5,13 @@ import { injectable, inject } from "inversify";
 import { Product, Domain, Link } from "../entities"
 
 //interfaces
-import { IDataStorage,IDomainTechnology } from "../container/interfaces";
+import { IDataStorage, IDomainTechnology } from "../container/interfaces";
 
 //helpers
 import { Mapper } from "../helpers/mappers/mapper";
 import { TYPES } from "../container/inversify-helpers/TYPES";
 import { DomainTechnology } from "../services/domain-technology.service";
+import { Source } from "../models/sources.model";
 
 @injectable()
 export class DataStorage implements IDataStorage {
@@ -29,19 +30,28 @@ export class DataStorage implements IDataStorage {
         }
     }
 
-    public async updateDomains(sources: string[]): Promise<void> {
+    public async updateDomains(sources: Array<Source>): Promise<void> {
         await this.init();
 
         const repository = this.connection.getRepository(Domain);
-        const domains: Array<Domain> =  await this._domainTechnology.getDomainEntities(sources);
-        
+        const domains: Array<Domain> = await this._domainTechnology.getDomainEntities(sources);
+
+        console.log('updating domains');
         try {
             await repository.save(domains)
-        }  catch (ex) {
+        } catch (ex) {
             console.log(ex);
         }
     }
-    
+
+    public async getAllLinks(): Promise<Link[]> {
+        await this.init();
+
+        const repositoryLink = this.connection.getRepository(Link);
+
+        return repositoryLink.find();
+    }
+
     public async getDomains(): Promise<Domain[]> {
         await this.init();
 
@@ -56,18 +66,20 @@ export class DataStorage implements IDataStorage {
         const domainsRepository = this.connection.getRepository(Domain);
         const domainEntity = await domainsRepository.findOne(domain);
 
-        links.forEach((link) => {
+        links = links.filter(link => link.id.match(domainEntity.productRegExp));
+
+        links.forEach((link: Link) => {
             link.domain = domainEntity;
             link.updated = Date.now().toString();
         });
 
         const linksRepository = this.connection.getRepository(Link);
 
-        console.log(`updating links for ${domain}`);
+        console.log(`updating links for ${domain}`)
 
         try {
             await linksRepository.save(links)
-        }  catch (ex) {
+        } catch (ex) {
             console.log(ex);
         }
     }
@@ -75,10 +87,9 @@ export class DataStorage implements IDataStorage {
     public async updateDomainLink(link: string, html: string): Promise<void> {
         await this.init();
         const linksRepository = this.connection.getRepository(Link);
-
         let linkEntity = await linksRepository.findOne(link);
 
-        if(!linkEntity) {
+        if (!linkEntity) {
             console.log('No such entity');
 
             return;
@@ -86,15 +97,15 @@ export class DataStorage implements IDataStorage {
 
         let htmlAsString = JSON.stringify(html);
 
-        const htmlFirst = htmlAsString.slice(0, htmlAsString.length/2);
-        const htmlSecond = htmlAsString.slice(htmlAsString.length/2);
-        
-        // linkEntity.htmlFirstPart = htmlFirst;
-        // linkEntity.htmlSecondPart = htmlSecond;
+        linkEntity.html = htmlAsString;
 
-        console.log('linkEntity', linkEntity);
+        console.log(`inserting html for ${link}`);
 
-        await linksRepository.save(linkEntity);
+        try {
+            await linksRepository.save(linkEntity);
+        } catch  (ex) {
+            console.log("ERROR: ", ex);
+        }
 
     }
 

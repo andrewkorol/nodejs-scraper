@@ -10,6 +10,9 @@ export class Domain {
     @Column({ nullable: true })
     technology: string;
 
+    @Column({ nullable: true })
+    productRegExp: string;
+
     @Column()
     updated: string;
 

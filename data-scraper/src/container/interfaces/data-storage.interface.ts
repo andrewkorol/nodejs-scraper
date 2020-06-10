@@ -1,10 +1,11 @@
-import { Connection } from "typeorm";
 import { Domain, Link, Product } from "../../entities";
+
+import { Source } from '../../models/sources.model';
 
 export interface IDataStorage {
       init(): Promise<void>
 
-      updateDomains(sources: string[]): Promise<void> 
+      updateDomains(sources: Source[]): Promise<void> 
     
       getDomains(): Promise<Domain[]> 
     
@@ -13,4 +14,6 @@ export interface IDataStorage {
       updateOrInsertProduct(entities: Product[]): Promise<void> 
       
       updateDomainLink(link: string, html: string): Promise<void>
+
+      getAllLinks(): Promise<Link[]> 
 }
