@@ -26,8 +26,8 @@ export class Startup implements IStartup {
 
     public async start(): Promise<void> {
         await this._dataStorage.updateDomains(SOURCES);
-        // this._domainCrawlQueue.fire();
-        this._htmlGrabQueue.fire();
+        this._domainCrawlQueue.fire();
+        // this._htmlGrabQueue.fire();
         // collectHtml('https://nonahandbags.com/products/fanny-pack-black');
     }
 }
