@@ -1,5 +1,6 @@
 export const SOURCES = [
     'https://nonahandbags.com',
-    'https://cocoandkinney.com',
-    'https://rixo.co.uk'
+    'https://www.aagestore.com',
+    'https://rixo.co.uk',
+    'https://www.belizeofficiel.com'
 ]

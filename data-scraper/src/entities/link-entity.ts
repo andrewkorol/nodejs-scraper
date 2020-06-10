@@ -24,6 +24,9 @@ export class Link {
     // })
     // htmlSecondPart: string;
 
+    @Column()
+    updated: string;
+
     @ManyToOne(type => Domain, domain => domain.links)
     domain: Domain;
 }

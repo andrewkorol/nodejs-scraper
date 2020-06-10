@@ -31,7 +31,7 @@ export class DomainCrawl implements IDomainCrawl {
 
                 const linkEntities: Array<Link> = Mapper.sitemapUrlsToEntity(sitemapUrls, url);
 
-                this._dataStorage.updateDomainLinks(linkEntities, url)
+                this._dataStorage.updateDomainLinks(linkEntities, url.replace('/sitemap.xml', ''))
                     .catch(reason => reject(reason))
                     .then(() => resolve());
             })

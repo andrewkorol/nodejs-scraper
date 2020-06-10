@@ -18,6 +18,7 @@ export class DomainTechnology {
 
             const technology = await this.getDomainTechnology(domain.id);
             domain.technology = technology ? technology : DomainTechnologyEnum.OTHER;
+            domain.updated = Date.now().toString();
 
             domains.push(domain);
         }

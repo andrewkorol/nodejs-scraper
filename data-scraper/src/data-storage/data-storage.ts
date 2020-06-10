@@ -36,9 +36,9 @@ export class DataStorage implements IDataStorage {
         const domains: Array<Domain> =  await this._domainTechnology.getDomainEntities(sources);
         
         try {
-            await repository.insert(domains)
+            await repository.save(domains)
         }  catch (ex) {
-            console.log('This domain already exists!');
+            console.log(ex);
         }
     }
     
@@ -58,16 +58,17 @@ export class DataStorage implements IDataStorage {
 
         links.forEach((link) => {
             link.domain = domainEntity;
+            link.updated = Date.now().toString();
         });
 
         const linksRepository = this.connection.getRepository(Link);
 
-        console.log('updating links');
+        console.log(`updating links for ${domain}`);
 
         try {
-            await linksRepository.insert(links)
+            await linksRepository.save(links)
         }  catch (ex) {
-            console.log('This link already exists!');
+            console.log(ex);
         }
     }
 
@@ -79,7 +80,7 @@ export class DataStorage implements IDataStorage {
 
         if(!linkEntity) {
             console.log('No such entity');
-            
+
             return;
         }
 

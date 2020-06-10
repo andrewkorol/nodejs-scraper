@@ -10,6 +10,9 @@ export class Domain {
     @Column({ nullable: true })
     technology: string;
 
+    @Column()
+    updated: string;
+
     @OneToMany(type => Link, link => link.domain)
     links: Link[];
 }
