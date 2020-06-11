@@ -17,6 +17,7 @@
       "lodash": "^4.17.15",
       "mysql": "^2.14.1",
       "open-graph-scraper": "^3.6.2",
+      "parse-open-graph": "^0.4.0",
       "reflect-metadata": "^0.1.13",
       "request-promise": "^4.2.5",
       "sitemap-stream-parser": "^1.7.0",

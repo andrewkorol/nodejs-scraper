@@ -15,6 +15,7 @@ export class DomainCrawlQueue implements IDomainCrawlQueue {
         username: 'andrewkorol',
         password: 'W#&nfR9$',
         vhost: 'scraper',
+        heartbeat: 60,
     };
 
     private connection;
@@ -53,6 +54,8 @@ export class DomainCrawlQueue implements IDomainCrawlQueue {
             return conn.createChannel();
         }).then((ch) => {
             return ch.assertQueue(this.queueName).then((ok) => {
+                ch.prefetch(30);
+                
                 return ch.consume(this.queueName, async (msg) => {
                     if (msg !== null) {
                         const messageContent = msg.content.toString();

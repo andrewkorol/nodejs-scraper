@@ -1,13 +1,14 @@
 import { injectable, inject } from "inversify";
-import { IDataStorage, IDomainCrawlQueue, IDomainCrawl, IHtmlGrabQueue } from "../container/interfaces";
+import { IDataStorage, IHtmlGrabQueue, IParser } from "../container/interfaces";
 import { TYPES } from "../container/inversify-helpers/TYPES";
+import { IHtmlParseQueue } from "../container/interfaces/html-parser-queue.interface";
 
 var amqp = require('amqplib');
 const axios = require('axios');
 
 @injectable()
-export class HtmlGrabQueue implements IHtmlGrabQueue {
-    private readonly queueName = 'html-queue';
+export class HtmlParseQueue implements IHtmlParseQueue {
+    private readonly queueName = 'parse-queue';
     private options = {
         protocol: 'amqp',
         hostname: 'rabbit.twopointzero.eu',
@@ -20,12 +21,12 @@ export class HtmlGrabQueue implements IHtmlGrabQueue {
 
     private connection;
     private _dataStorage: IDataStorage;
-    private _domainCrawl: IDomainCrawl;
+    private _parser: IParser;
 
     constructor(@inject(TYPES.IDataStorage) dataStorage: IDataStorage,
-        @inject(TYPES.IDomainCrawl) domainCrawl: IDomainCrawl) {
+        @inject(TYPES.IParser) parser: IParser) {
         this._dataStorage = dataStorage;
-        this._domainCrawl = domainCrawl;
+        this._parser = parser;
 
         this.connection = amqp.connect(this.options);
     }
@@ -43,7 +44,9 @@ export class HtmlGrabQueue implements IHtmlGrabQueue {
                 const messages = await this._dataStorage.getAllLinks();
 
                 messages.forEach((link) => {
-                    return ch.sendToQueue(this.queueName, Buffer.from(link.id));
+                    if(link.html) {
+                        return ch.sendToQueue(this.queueName, Buffer.from(link.html));
+                    }
                 })
             });
         }).catch(console.warn);
@@ -59,19 +62,12 @@ export class HtmlGrabQueue implements IHtmlGrabQueue {
                 return ch.consume(this.queueName, async (msg) => {
                     if (msg !== null) {
                         const messageContent = msg.content.toString();
-                        console.log(messageContent);
-
-                        await this.collectHtml(messageContent);
+                
+                         await this._parser.parse(messageContent);
                         ch.ack(msg);
                     }
                 });
             });
         }).catch(console.warn);
-    }
-
-    private async collectHtml(link: string) {
-        const res = await axios.get(link);
-    
-        this._dataStorage.updateDomainLink(link, res.data);
     }
 }

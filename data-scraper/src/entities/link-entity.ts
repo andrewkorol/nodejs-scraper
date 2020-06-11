@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryColumn, ManyToOne } from "typeorm";
+import { Entity, Column, PrimaryColumn, ManyToOne, OneToOne, JoinColumn } from "typeorm";
 import { Domain } from './domain-entity';
+import { Product } from "./product-entity";
 
 @Entity()
 export class Link {
@@ -30,4 +31,8 @@ export class Link {
 
     @ManyToOne(type => Domain, domain => domain.links)
     domain: Domain;
+
+    @OneToOne(type => Product)
+    @JoinColumn()
+    product: Product;
 }

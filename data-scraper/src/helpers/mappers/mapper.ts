@@ -7,12 +7,12 @@ export class Mapper {
     public static OGModelToEntity(source: OpenGraphModel): Product {
         var entity = new Product();
      
-        entity.id = source.ogUrl;
-        entity.productImages = JSON.stringify(source.ogImage);
-        entity.productDascription = source.ogDescription;
-        entity.productName = source.ogTitle;
-        entity.price = source.ogPriceAmount;
-        entity.currency = source.ogPriceCurrency;
+        entity.id = source.url;
+        entity.productImages = JSON.stringify(source.image);
+        entity.productDascription = source.description;
+        entity.productName = source.title;
+        entity.price = source.price.amount;
+        entity.currency = source.price.currency;
 
         return entity;
     }

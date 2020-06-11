@@ -52,12 +52,35 @@ export class DataStorage implements IDataStorage {
         return repositoryLink.find();
     }
 
+    public async getLink(id: string): Promise<Link> {
+        await this.init();
+
+        const repositoryLink = this.connection.getRepository(Link);
+
+        return repositoryLink.findOne(id);
+    }
+
     public async getDomains(): Promise<Domain[]> {
         await this.init();
 
         const repository = this.connection.getRepository(Domain);
 
         return repository.find();
+    }
+
+    public async updateProduct(entity: Product): Promise<void> {
+        await this.init();
+
+        const repositoryProduct = this.connection.getRepository(Product);    
+        await repositoryProduct.save(entity);
+
+        const repositoryLink = this.connection.getRepository(Link);
+        let link = await repositoryLink.findOne(entity.id);
+        link.product = entity;
+
+        console.log(`update ${entity.id} with collected product data`);
+
+        await repositoryLink.save(link);
     }
 
     public async updateDomainLinks(links: Link[], domain: string): Promise<void> {

@@ -4,7 +4,9 @@ const TYPES = {
     IDomainTechnology: Symbol.for("IDomainTechnology"),
     IDomainCrawlQueue: Symbol.for("IDomainCrawlQueue"),
     IStartup: Symbol.for("IStartup"),
-    IHtmlGrabQueue: Symbol.for("IHtmlGrabQueue")
+    IHtmlGrabQueue: Symbol.for("IHtmlGrabQueue"),
+    IParser: Symbol.for("IParser"),
+    IHtmlParseQueue: Symbol.for("IHtmlParseQueue")
 };
 
 export { TYPES };

@@ -1,14 +1,14 @@
 export interface OpenGraphModel {
-    ogSiteName: string;
-    ogUrl: string;
-    ogTitle: string;
-    ogType: string;
-    ogDescription: string;
-    ogPriceAmount: string;
-    ogPriceCurrency: string;
-    twitterSite: string;
-    twitterCard: string;
-    twitterTitle: string;
-    twitterDescription: string;
-    ogImage: any;
+    site_name: string;
+    url: string;
+    title: string;
+    type: string;
+    description: string;
+    price: OpenGraphPrice;
+    image: any;
 } 
+
+interface OpenGraphPrice {
+    amount: string;
+    currency: string;
+}

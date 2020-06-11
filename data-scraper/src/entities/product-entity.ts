@@ -6,7 +6,10 @@ export class Product {
     @PrimaryColumn()
     id: string;
 
-    @Column()
+    @Column({
+        length: 1000,
+        nullable: true
+    })
     productImages: string;
 
     @Column({
