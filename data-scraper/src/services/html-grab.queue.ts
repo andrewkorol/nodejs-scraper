@@ -4,6 +4,7 @@ import { TYPES } from "../container/inversify-helpers/TYPES";
 
 var amqp = require('amqplib');
 const axios = require('axios');
+let logger = require('perfect-logger');
 
 @injectable()
 export class HtmlGrabQueue implements IHtmlGrabQueue {
@@ -46,7 +47,9 @@ export class HtmlGrabQueue implements IHtmlGrabQueue {
                     return ch.sendToQueue(this.queueName, Buffer.from(link.id));
                 })
             });
-        }).catch(console.warn);
+        }).catch((ex) => {
+            logger.crit("Exception oqqured while run /'produse/' in HtmlGrabQueue: ", ex);
+        });
     }
 
     private consume(): void {
@@ -66,7 +69,9 @@ export class HtmlGrabQueue implements IHtmlGrabQueue {
                     }
                 });
             });
-        }).catch(console.warn);
+        }).catch((ex) => {
+            logger.crit("Exception oqqured while run /'consume/' in HtmlGrabQueue: ", ex);
+        });
     }
 
     private async collectHtml(link: string) {

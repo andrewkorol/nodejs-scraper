@@ -3,6 +3,7 @@ import { inject, injectable } from "inversify";
 var sitemaps = require('sitemap-stream-parser');
 const axios = require('axios');
 const getHrefs = require('get-hrefs');
+let logger = require('perfect-logger');
 
 var Crawler = require("crawler");
 
@@ -32,10 +33,10 @@ export class DomainCrawl implements IDomainCrawl {
         return new Promise((resolve, reject) => {
             let sitemapUrls = [];
 
-            console.log.toString()
             sitemaps.parseSitemaps(`${url}/sitemap.xml`, (url) => { sitemapUrls.push(url); }, async (err, sitemaps) => {
                 if (err) {
-                    console.log(err);
+                    logger.crit("Exception oqqured while run /'parseSitemaps/': ", err);
+
                     reject(err);
                 }
 
@@ -46,7 +47,10 @@ export class DomainCrawl implements IDomainCrawl {
                 const linkEntities: Array<Link> = Mapper.sitemapUrlsToEntity(sitemapUrls, url);
 
                 this._dataStorage.updateDomainLinks(linkEntities, url)
-                    .catch(reason => reject(reason))
+                    .catch(reason => {
+                        logger.crit("Exception oqqured while run /'crawl/': ", reason);
+                        reject(reason)
+                    })
                     .then(() => resolve());
             })
         })

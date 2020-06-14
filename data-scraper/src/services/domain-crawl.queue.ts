@@ -4,6 +4,7 @@ import { TYPES } from "../container/inversify-helpers/TYPES";
 import { Domain } from "../entities";
 
 var amqp = require('amqplib');
+let logger = require('perfect-logger');
 
 @injectable()
 export class DomainCrawlQueue implements IDomainCrawlQueue {
@@ -46,7 +47,9 @@ export class DomainCrawlQueue implements IDomainCrawlQueue {
                     return ch.sendToQueue(this.queueName, Buffer.from(link.id));
                 })
             });
-        }).catch(console.warn);
+        }).catch((ex) => {
+            logger.crit("Exception oqqured while run /'produse/' in DomainCrawlQueue: ", ex);
+        });
     }
 
     private consume(): void {
@@ -55,7 +58,7 @@ export class DomainCrawlQueue implements IDomainCrawlQueue {
         }).then((ch) => {
             return ch.assertQueue(this.queueName).then((ok) => {
                 ch.prefetch(30);
-                
+
                 return ch.consume(this.queueName, async (msg) => {
                     if (msg !== null) {
                         const messageContent = msg.content.toString();
@@ -65,6 +68,8 @@ export class DomainCrawlQueue implements IDomainCrawlQueue {
                     }
                 });
             });
-        }).catch(console.warn);
+        }).catch((ex) => {
+            logger.crit("Exception oqqured while run /'consume/' in DomainCrawlQueue: ", ex);
+        });
     }
 }

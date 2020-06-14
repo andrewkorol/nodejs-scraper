@@ -1,6 +1,8 @@
 import { Connection, createConnection, getConnection } from "typeorm";
 import { injectable, inject } from "inversify";
 
+let logger = require('perfect-logger');
+
 //entities
 import { Product, Domain, Link } from "../entities"
 
@@ -36,11 +38,11 @@ export class DataStorage implements IDataStorage {
         const repository = this.connection.getRepository(Domain);
         const domains: Array<Domain> = await this._domainTechnology.getDomainEntities(sources);
 
-        console.log('updating domains');
+        logger.info("Updating domains");
         try {
             await repository.save(domains)
         } catch (ex) {
-            console.log(ex);
+            logger.crit("Exception oqqured while run /'updateDomains/': ", ex);
         }
     }
 
@@ -78,7 +80,7 @@ export class DataStorage implements IDataStorage {
         let link = await repositoryLink.findOne(entity.id);
         link.product = entity;
 
-        console.log(`update ${entity.id} with collected product data`);
+        logger.info(`update ${entity.id} with collected product data`);
 
         await repositoryLink.save(link);
     }
@@ -98,12 +100,13 @@ export class DataStorage implements IDataStorage {
 
         const linksRepository = this.connection.getRepository(Link);
 
-        console.log(`updating links for ${domain}`)
+        logger.info(`updating links for ${domain}`)
 
         try {
             await linksRepository.save(links)
         } catch (ex) {
-            console.log(ex);
+            logger.crit("Exception oqqured while run /'updateDomainLinks/': ", ex);
+
         }
     }
 
@@ -113,7 +116,7 @@ export class DataStorage implements IDataStorage {
         let linkEntity = await linksRepository.findOne(link);
 
         if (!linkEntity) {
-            console.log('No such entity');
+            logger.info(`No such entity with id: `);
 
             return;
         }
@@ -122,40 +125,13 @@ export class DataStorage implements IDataStorage {
 
         linkEntity.html = htmlAsString;
 
-        console.log(`inserting html for ${link}`);
+        logger.info(`inserting html for ${link}`);
 
         try {
             await linksRepository.save(linkEntity);
         } catch  (ex) {
-            console.log("ERROR: ", ex);
+            logger.crit("ERROR: ", ex);
         }
-
-    }
-
-    public async updateOrInsertProduct(entities: Product[]): Promise<void> {
-        await this.init();
-
-        const repository = this.connection.getRepository(Product);
-
-        console.log('inserting in DB');
-        return new Promise((resolve, reject) => {
-            const interval = setInterval(async () => {
-                const spliseCount = entities.length < 10 ? entities.length : 100;
-                const entitiesToInsert = entities.splice(0, spliseCount);
-
-                console.log(`${entities.length} left`);
-                repository.insert(entitiesToInsert)
-                    .then(() => {
-                        if (entities.length === 0) {
-                            clearInterval(interval)
-                            resolve();
-                        }
-                    })
-                    .catch((ex) => { })
-
-
-            }, 3000);
-        });
 
     }
 }

@@ -3,6 +3,8 @@ import { IDataStorage, IHtmlGrabQueue, IParser } from "../container/interfaces";
 import { TYPES } from "../container/inversify-helpers/TYPES";
 import { IHtmlParseQueue } from "../container/interfaces/html-parser-queue.interface";
 
+
+let logger = require('perfect-logger');
 var amqp = require('amqplib');
 const axios = require('axios');
 
@@ -49,7 +51,9 @@ export class HtmlParseQueue implements IHtmlParseQueue {
                     }
                 })
             });
-        }).catch(console.warn);
+        }).catch((ex) => {
+            logger.crit("Exception oqqured while run /'produse/' in HtmlParseQueue: ", ex);
+        });
     }
 
     private consume(): void {
@@ -68,6 +72,8 @@ export class HtmlParseQueue implements IHtmlParseQueue {
                     }
                 });
             });
-        }).catch(console.warn);
+        }).catch((ex) => {
+            logger.crit("Exception oqqured while run /'consume/' in HtmlParseQueue: ", ex);
+        });
     }
 }

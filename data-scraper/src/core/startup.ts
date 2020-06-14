@@ -1,5 +1,6 @@
 import { inject, injectable } from "inversify";
 
+
 //interfaces
 import { IDataStorage, IDomainCrawlQueue, IStartup, IHtmlGrabQueue, IParser } from "../container/interfaces";
 
