@@ -18,6 +18,7 @@ export class DomainTechnology implements IDomainTechnology {
 
             domain.id = source.domainUrl;
             domain.productRegExp = source.productRegExp;
+            domain.coreLink = source.coreLink;
 
             const technology = await this.getDomainTechnology(domain.id);
             domain.technology = technology ? technology : DomainTechnologyEnum.OTHER;

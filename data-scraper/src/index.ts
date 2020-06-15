@@ -13,10 +13,10 @@ import { TYPES } from "./container/inversify-helpers/TYPES";
 
 
 logger.initialize('nodejs-parser', {
-    logLevelFile: 0,                    // Log level for file
-    logLevelConsole: 0,                 // Log level for STDOUT/STDERR
-    logDirectory: 'logs/',              // Log directory
-    customBannerHeaders: 'Logs for nodejs-parser'  // Custom Log Banner
+    logLevelFile: 0,
+    logLevelConsole: 0,
+    logDirectory: 'logs/',
+    customBannerHeaders: 'Logs for nodejs-parser'
 });
 
 const startup = appContainer.get<IStartup>(TYPES.IStartup);

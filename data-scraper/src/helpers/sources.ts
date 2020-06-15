@@ -6,4 +6,5 @@ export const SOURCES: Array<Source> = [
     { domainUrl: 'https://rixo.co.uk', productRegExp: '.*/product' },
     { domainUrl: 'https://www.belizeofficiel.com', productRegExp: '.*/product' },
     { domainUrl: 'https://www.janekoenig.com', productRegExp: '.*/product' },
+    { domainUrl: 'https://www.flattered.com/se/all-shoes/flats', productRegExp: '.*/all-shoes', coreLink: 'https://www.flattered.com' }
 ]

@@ -42,6 +42,7 @@ export class DataStorage implements IDataStorage {
         try {
             await repository.save(domains)
         } catch (ex) {
+            console.log(ex);
             logger.crit("Exception oqqured while run /'updateDomains/': ", ex);
         }
     }
@@ -73,13 +74,18 @@ export class DataStorage implements IDataStorage {
     public async updateProduct(entity: Product): Promise<void> {
         await this.init();
 
-        const repositoryProduct = this.connection.getRepository(Product); 
+        const repositoryProduct = this.connection.getRepository(Product);
         entity.updated = Date.now().toString();
 
         await repositoryProduct.save(entity);
 
         const repositoryLink = this.connection.getRepository(Link);
         let link = await repositoryLink.findOne(entity.id);
+        
+        if(!link) {
+            return;
+        }
+
         link.product = entity;
 
         logger.info(`update ${entity.id} with collected product data`);
@@ -95,7 +101,11 @@ export class DataStorage implements IDataStorage {
 
         links = links.filter(link => link.id.match(domainEntity.productRegExp));
 
-        links.forEach((link: Link) => {
+        links.forEach((link: Link) => { 
+            if ( !(link.id.startsWith('http')) ) {
+                link.id = `${domainEntity.coreLink}/${link.id}`;
+            }
+
             link.domain = domainEntity;
             link.updated = Date.now().toString();
         });
@@ -131,7 +141,7 @@ export class DataStorage implements IDataStorage {
 
         try {
             await linksRepository.save(linkEntity);
-        } catch  (ex) {
+        } catch (ex) {
             logger.crit("ERROR: ", ex);
         }
 

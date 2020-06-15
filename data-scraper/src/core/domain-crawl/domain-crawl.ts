@@ -60,6 +60,8 @@ export class DomainCrawl implements IDomainCrawl {
      const res = await axios.get(url);
      const links = getHrefs(res.data);
 
+     console.log('links', links);
+
      return links;
     }
 

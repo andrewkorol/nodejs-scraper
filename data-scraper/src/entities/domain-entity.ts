@@ -8,6 +8,9 @@ export class Domain {
     id: string;
 
     @Column({ nullable: true })
+    coreLink: string;
+
+    @Column({ nullable: true })
     technology: string;
 
     @Column({ nullable: true })

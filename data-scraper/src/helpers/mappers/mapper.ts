@@ -10,6 +10,10 @@ export class Mapper {
         // outEntity.productImages = JSON.stringify(source.image);
         outEntity.description = source.description;
         outEntity.name = source.title;
+        if(!source.price) {
+            return;
+        }
+        
         outEntity.price = source.price.amount;
         outEntity.currency = source.price.currency;
     }
