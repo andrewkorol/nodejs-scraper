@@ -1,6 +1,9 @@
+import { Mapper } from "../../helpers/mappers/mapper";
+
 const cheerio = require('cheerio');
 const microdata = require('microdata-node');
 const md5 = require('md5');
+const { parse } = require('parse-open-graph')
 
 export class ScrapeHtml {
     private data;
@@ -16,16 +19,13 @@ export class ScrapeHtml {
             id: this.data.id,
             images: [],
             brand: '',
-            canonicalId: null,
-            url: null,
             name: null,
             description: null,
             options: [],
             price: 0,
-            currency: 'EUR',
+            currency: null,
             available: false,
             tags: ['product'],
-            lastmodified: date,
             public: false,
         }
     }
@@ -71,13 +71,13 @@ export class ScrapeHtml {
         return parseFloat(strg);
     }
 
-    cleanCurrency(strg){
+    cleanCurrency(strg) {
         var currency = "";
         var output = "";
         console.log('===currency===');
         console.log(strg);
         console.log('===currency===');
-        if(strg != null){
+        if (strg != null) {
             strg = strg.toLowerCase();
             if (strg.includes('pound') || strg.includes('£')) {
                 output = 'GBP';
@@ -105,8 +105,8 @@ export class ScrapeHtml {
         }
         return output;
     }
-    
-    
+
+
 
     getProduct() {
         if (this.data.json != null && false) {
@@ -135,9 +135,17 @@ export class ScrapeHtml {
         } else {
             if (this.data.html != null) {
 
-                console.log('html parse start');
+                const $ = cheerio.load(JSON.parse(this.data.html));
 
-                const $ = cheerio.load(this.data.html);
+                const meta = $('meta[property]').map((i, el) => ({
+                    property: $(el).attr('property'),
+                    content: $(el).attr('content')
+                })).get()
+
+                const result = parse(meta);
+
+                Mapper.OGModelToEntity(result.og, this.product);
+
                 const micro = microdata.toJson(this.data.html, { base: 'http://www.example.com' });
 
                 for (var i = 0; i < micro.items.length; i++) {
@@ -176,7 +184,7 @@ export class ScrapeHtml {
                                 if (offer.properties.price) {
                                     this.product.price = this.cleanAmount(offer.properties.price[0]);
                                 }
-                                if (offer.properties.priceCurrency) {
+                                if (offer.properties.priceCurrency && !this.product.currency) {
                                     this.product.currency = this.cleanCurrency(offer.properties.priceCurrency[0]);
                                 }
 
@@ -343,12 +351,12 @@ export class ScrapeHtml {
                 }
 
                 var priceCurrency = $('[property=\'product:price:currency\']');
-                if (priceCurrency.length == 1)
-                    this.product.currency =  this.cleanCurrency(priceCurrency[0].attribs.content);
+                if (priceCurrency.length == 1 && !this.product.currency)
+                    this.product.currency = this.cleanCurrency(priceCurrency[0].attribs.content);
 
                 var priceCurrencyOg = $('[property=\'og:price:currency\']');
-                if (priceCurrencyOg.length == 1)
-                    this.product.currency =  this.cleanCurrency(priceCurrencyOg[0].attribs.content);
+                if (priceCurrencyOg.length == 1 && !this.product.currency)
+                    this.product.currency = this.cleanCurrency(priceCurrencyOg[0].attribs.content);
 
                 if (typeof this.product.price === 'undefined' || !this.product.price) {
                     //LETS do some dirty checks:
@@ -360,10 +368,12 @@ export class ScrapeHtml {
                             .text();
                         this.product.price = this.cleanAmount(priceString);
 
-                        this.product.currency = this.cleanCurrency($('.woocommerce-Price-amount').first().clone()  //clone the element
-                            .children() //select all the children
-                            .first()   //remove all the children
-                            .text());
+                        if (!this.product.currency) {
+                            this.product.currency = this.cleanCurrency($('.woocommerce-Price-amount').first().clone()  //clone the element
+                                .children() //select all the children
+                                .first()   //remove all the children
+                                .text());
+                        }
                     }
                 }
                 if (typeof this.product.price === 'undefined' || !this.product.price) {
@@ -378,14 +388,14 @@ export class ScrapeHtml {
                     if (priceProp.length > 0)
                         this.product.price = this.cleanAmount(priceProp[0].attribs.content);
                     var currencyProp = $('[itemprop=\'priceCurrency\']');
-                    if (currencyProp.length > 0)
+                    if (currencyProp.length > 0 && !this.product.currency)
                         this.product.currency = this.cleanCurrency(priceDifs.first().text());
                 }
 
 
                 if (typeof this.product.price === 'undefined' || !this.product.price) {
                     var priceDifs = $('div.productPrice');
-                    if (priceDifs.length > 0){
+                    if (priceDifs.length > 0  && !this.product.currency) {
                         this.product.price = this.cleanAmount(priceDifs.first().text())
                         this.product.currency = this.cleanCurrency(priceDifs.first().text());
                     }
@@ -405,13 +415,13 @@ export class ScrapeHtml {
                     }
                 }
 
-                if ( typeof this.product.price === 'undefined' || !this.product.price) {
+                if (typeof this.product.price === 'undefined' || !this.product.price) {
                     console.log("no price found yet .... rule 382")
                     this.product.price = this.cleanAmount($('p.c-price__txt').first().text());
                     this.product.currency = this.cleanCurrency($('p.c-price__txt').first().text());
                 }
 
-                if ( typeof this.product.price === 'undefined' || !this.product.price) {
+                if (typeof this.product.price === 'undefined' || !this.product.price) {
                     this.product.price = 0;
                 }
 
@@ -435,11 +445,9 @@ export class ScrapeHtml {
 
                 this.product.domain = this.data.domain
 
-                if(this.data.domain == "stinegoya.com"){
+                if (this.data.domain == "stinegoya.com") {
                     this.product.currency = "EUR";
                 }
-
-
             }
 
             return this.product;

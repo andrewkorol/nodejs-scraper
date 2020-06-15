@@ -10,19 +10,25 @@ export class Product {
         length: 1000,
         nullable: true
     })
-    productImages: string;
+    images: string;
 
     @Column({
         length: 10000,
         nullable: true
     })
-    productDascription: string;
+    description: string;
 
     @Column({ nullable: true })
-    sku: string;
+    name: string;
 
     @Column({ nullable: true })
-    productName: string;
+    available: boolean;
+
+    @Column({ nullable: true })
+    options: string;
+
+    @Column({ nullable: true })
+    brand: string;
 
     @Column({ nullable: true })
     price: string;
@@ -33,9 +39,6 @@ export class Product {
     @Column({ nullable: true })
     tags: string;
 
-    @Column({ nullable: true })
-    metadata: string;
-
-    @Column({ nullable: true })
-    stockLevels: string;
+    @Column()
+    updated: string;
 }

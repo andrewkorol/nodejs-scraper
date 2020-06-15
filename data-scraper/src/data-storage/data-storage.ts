@@ -73,7 +73,9 @@ export class DataStorage implements IDataStorage {
     public async updateProduct(entity: Product): Promise<void> {
         await this.init();
 
-        const repositoryProduct = this.connection.getRepository(Product);    
+        const repositoryProduct = this.connection.getRepository(Product); 
+        entity.updated = Date.now().toString();
+
         await repositoryProduct.save(entity);
 
         const repositoryLink = this.connection.getRepository(Link);

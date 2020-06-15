@@ -35,21 +35,10 @@ export class Parser implements IParser {
         const scrapeHtml = new ScrapeHtml(data);
         const product = scrapeHtml.getProduct();
 
-        console.log('result from ScrapeHtml: ', product);
-        const $ = cheerio.load(JSON.parse(link.html))
- 
-        const meta = $('meta[property]').map((i, el) => ({
-          property: $(el).attr('property'),
-          content: $(el).attr('content')
-        })).get()
-         
-        const result = parse(meta);
+        product.options = JSON.stringify(product.options)
+        product.tags = JSON.stringify(product.tags)
+        product.images = JSON.stringify(product.images)
 
-        console.log('result from META: ', JSON.stringify(result, null, 2));
-
-
-        // const prodEntity = Mapper.OGModelToEntity(result.og)
-
-        // await this._dataStorage.updateProduct(prodEntity);
+        await this._dataStorage.updateProduct(product);
     }
 }

@@ -4,17 +4,14 @@ import { Domain } from '../../entities/domain-entity';
 import { Link } from '../../entities/link-entity';
 
 export class Mapper {
-    public static OGModelToEntity(source: OpenGraphModel): Product {
-        var entity = new Product();
-     
-        entity.id = source.url;
-        entity.productImages = JSON.stringify(source.image);
-        entity.productDascription = source.description;
-        entity.productName = source.title;
-        entity.price = source.price.amount;
-        entity.currency = source.price.currency;
-
-        return entity;
+    public static OGModelToEntity(source: OpenGraphModel, outEntity: Product): void {
+        outEntity.brand = source.site_name;
+        outEntity.id = source.url;
+        // outEntity.productImages = JSON.stringify(source.image);
+        outEntity.description = source.description;
+        outEntity.name = source.title;
+        outEntity.price = source.price.amount;
+        outEntity.currency = source.price.currency;
     }
 
     public static domainListToEntity(sources: string[]): Domain[] {
