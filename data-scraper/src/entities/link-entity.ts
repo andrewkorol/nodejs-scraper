@@ -9,22 +9,9 @@ export class Link {
 
     @Column({
         type: "longtext",
-        // length: 12000,
         nullable: true
     })
     html: string;
-
-    // @Column({
-    //     length: 12000,
-    //     nullable: true
-    // })
-    // htmlFirstPart: string;
-
-    // @Column({
-    //     // length: 6000,
-    //     nullable: true
-    // })
-    // htmlSecondPart: string;
 
     @Column()
     updated: string;

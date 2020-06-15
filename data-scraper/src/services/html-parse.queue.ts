@@ -2,6 +2,7 @@ import { injectable, inject } from "inversify";
 import { IDataStorage, IHtmlGrabQueue, IParser } from "../container/interfaces";
 import { TYPES } from "../container/inversify-helpers/TYPES";
 import { IHtmlParseQueue } from "../container/interfaces/html-parser-queue.interface";
+import { Link } from "../entities";
 
 
 let logger = require('perfect-logger');
@@ -46,8 +47,8 @@ export class HtmlParseQueue implements IHtmlParseQueue {
                 const messages = await this._dataStorage.getAllLinks();
 
                 messages.forEach((link) => {
-                    if(link.html) {
-                        return ch.sendToQueue(this.queueName, Buffer.from(link.html));
+                    if(link.html && link.id) {
+                        return ch.sendToQueue(this.queueName, Buffer.from(JSON.stringify(link)));
                     }
                 })
             });
@@ -66,8 +67,12 @@ export class HtmlParseQueue implements IHtmlParseQueue {
                 return ch.consume(this.queueName, async (msg) => {
                     if (msg !== null) {
                         const messageContent = msg.content.toString();
+                        const link: Link = JSON.parse(messageContent);
                 
-                         await this._parser.parse(messageContent);
+                        if(link.html && link.id) {
+                            await this._parser.parse(link);
+                        }
+
                         ch.ack(msg);
                     }
                 });

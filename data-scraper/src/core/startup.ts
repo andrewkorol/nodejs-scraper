@@ -30,7 +30,7 @@ export class Startup implements IStartup {
     }
 
     public async start(): Promise<void> {
-        await this._dataStorage.updateDomains(SOURCES);
+        // await this._dataStorage.updateDomains(SOURCES);
         // this._domainCrawlQueue.fire();
         // this._htmlGrabQueue.fire();
         this._htmlParseQueue.fire();

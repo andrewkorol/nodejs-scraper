@@ -1,5 +1,5 @@
-import { Product } from "../../entities";
+import { Link } from "../../entities";
 
 export interface IParser {
-    parse(sitemapUrl: string)
+    parse(sitemapUrl: Link)
 }
