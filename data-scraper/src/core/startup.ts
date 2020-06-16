@@ -32,8 +32,8 @@ export class Startup implements IStartup {
     public async start(): Promise<void> {
         // await this._dataStorage.updateDomains(SOURCES);
         // this._domainCrawlQueue.fire();
-        // this._htmlGrabQueue.fire();
-        this._htmlParseQueue.fire();
-        // collectHtml('https://nonahandbags.com/products/fanny-pack-black');
+        this._htmlGrabQueue.fire();
+        // this._htmlGrabQueue.collectHtml('https://scampi.se/artiklar/produkter/acapulco-canopy-marine-swimsuit');
+        // this._htmlParseQueue.fire();
     }
 }

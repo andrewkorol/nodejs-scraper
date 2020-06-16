@@ -1,4 +1,5 @@
 import { Mapper } from "../../helpers/mappers/mapper";
+import { isEmpty } from "lodash"
 
 const cheerio = require('cheerio');
 const microdata = require('microdata-node');
@@ -41,7 +42,10 @@ export class ScrapeHtml {
     }
 
     cleanImageUrl(url) {
-        //console.log('cleaning ' + url);
+        if(!url) {
+            return;
+        }
+        // console.log('cleaning ' + url);
         const regexMag = /\/cache\/[0-9]\/(thumbnail\/\d{2,4}[x]\d{2,4}|small_image\/\d{2,4}[x]\d{2,4}|image\/\d{2,4}[x]\d{2,4}|image)\/[a-z 0-9]*/gi;
         url = url.replace(regexMag, '');
         const regexMag2 = /(\/cache\/[a-z 0-9]+)(\/[a-z 0-9]{1}\/[a-z 0-9]{1})/gi;
@@ -134,7 +138,6 @@ export class ScrapeHtml {
             return this.product;
         } else {
             if (this.data.html != null) {
-
                 const $ = cheerio.load(JSON.parse(this.data.html));
 
                 const meta = $('meta[property]').map((i, el) => ({
@@ -144,7 +147,9 @@ export class ScrapeHtml {
 
                 const result = parse(meta);
 
-                Mapper.OGModelToEntity(result.og, this.product);
+                if(result) {
+                    Mapper.OGModelToEntity(result.og, this.product);
+                }
 
                 const micro = microdata.toJson(this.data.html, { base: 'http://www.example.com' });
 

@@ -43,8 +43,10 @@ export class DomainCrawlQueue implements IDomainCrawlQueue {
             return ch.assertQueue(this.queueName).then(async (ok) => {
                 const messages = await this._dataStorage.getDomains();
 
-                messages.forEach((link) => {
-                    return ch.sendToQueue(this.queueName, Buffer.from(link.id));
+                messages.forEach((domain: Domain) => {    
+                    if(domain.id) {
+                        return ch.sendToQueue(this.queueName, Buffer.from(JSON.stringify(domain)));
+                    }              
                 })
             });
         }).catch((ex) => {
@@ -62,8 +64,12 @@ export class DomainCrawlQueue implements IDomainCrawlQueue {
                 return ch.consume(this.queueName, async (msg) => {
                     if (msg !== null) {
                         const messageContent = msg.content.toString();
-                        console.log(messageContent);
-                        await this._domainCrawl.crawl(messageContent);
+                        const message: Domain = JSON.parse(messageContent);
+
+                        if(message.id) {
+                            await this._domainCrawl.crawl(message);
+                        }
+
                         ch.ack(msg);
                     }
                 });

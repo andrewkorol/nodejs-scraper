@@ -5,6 +5,7 @@ import { TYPES } from "../container/inversify-helpers/TYPES";
 var amqp = require('amqplib');
 const axios = require('axios');
 let logger = require('perfect-logger');
+var request = require("request");
 
 @injectable()
 export class HtmlGrabQueue implements IHtmlGrabQueue {
@@ -57,7 +58,7 @@ export class HtmlGrabQueue implements IHtmlGrabQueue {
             return conn.createChannel();
         }).then((ch) => {
             return ch.assertQueue(this.queueName).then((ok) => {
-                ch.prefetch(30);
+                ch.prefetch(1);
 
                 return ch.consume(this.queueName, async (msg) => {
                     if (msg !== null) {
@@ -74,9 +75,17 @@ export class HtmlGrabQueue implements IHtmlGrabQueue {
         });
     }
 
-    private async collectHtml(link: string) {
+    public async collectHtml(link: string) {
         const res = await axios.get(link);
-    
-        this._dataStorage.updateDomainLink(link, res.data);
+
+        console.log(JSON.stringify(res.data));
+
+        await this._dataStorage.updateDomainLink(link, JSON.stringify(res.data));
+
+
+        // request({ uri: link },
+        //     (error, response, body) => {
+
+        //     });
     }
 }

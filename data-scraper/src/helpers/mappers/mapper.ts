@@ -4,16 +4,16 @@ import { Domain } from '../../entities/domain-entity';
 import { Link } from '../../entities/link-entity';
 
 export class Mapper {
-    public static OGModelToEntity(source: OpenGraphModel, outEntity: Product): void {
+    public static OGModelToEntity(source: OpenGraphModel, outEntity): void {
         outEntity.brand = source.site_name;
-        outEntity.id = source.url;
-        // outEntity.productImages = JSON.stringify(source.image);
+        // outEntity.id = source.url;
+        // outEntity.images.push(...source.image);
         outEntity.description = source.description;
         outEntity.name = source.title;
         if(!source.price) {
             return;
         }
-        
+
         outEntity.price = source.price.amount;
         outEntity.currency = source.price.currency;
     }

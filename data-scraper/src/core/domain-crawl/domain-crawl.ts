@@ -8,7 +8,7 @@ let logger = require('perfect-logger');
 var Crawler = require("crawler");
 
 //entities
-import { Link } from "../../entities";
+import { Link, Domain } from "../../entities";
 
 //interfaces
 import { IDataStorage, IDomainCrawl } from "../../container/interfaces";
@@ -25,28 +25,28 @@ export class DomainCrawl implements IDomainCrawl {
         this._dataStorage = dataStorage;
     }
 
-    public crawl(url: string): void {
-         this._crawl(url);
+    public crawl(domain: Domain): void {
+        this._crawl(domain);
     }
 
-    private _crawl(url: string): Promise<void> {
+    private _crawl(domain: Domain): Promise<void> {
         return new Promise((resolve, reject) => {
             let sitemapUrls = [];
 
-            sitemaps.parseSitemaps(`${url}/sitemap.xml`, (url) => { sitemapUrls.push(url); }, async (err, sitemaps) => {
+            sitemaps.parseSitemaps(`${domain.id}/sitemap.xml`, (url) => { sitemapUrls.push(url); }, async (err, sitemaps) => {
                 if (err) {
                     logger.crit("Exception oqqured while run /'parseSitemaps/': ", err);
 
                     reject(err);
                 }
 
-                if(sitemapUrls.length === 0) {
-                    sitemapUrls = await this.crawlByStartPage(url);
+                if (sitemapUrls.length === 0) {
+                    sitemapUrls = await this.crawlByStartPage(domain);
                 }
 
-                const linkEntities: Array<Link> = Mapper.sitemapUrlsToEntity(sitemapUrls, url);
+                const linkEntities: Array<Link> = Mapper.sitemapUrlsToEntity(sitemapUrls, domain.id);
 
-                this._dataStorage.updateDomainLinks(linkEntities, url)
+                this._dataStorage.updateDomainLinks(linkEntities, domain)
                     .catch(reason => {
                         logger.crit("Exception oqqured while run /'crawl/': ", reason);
                         reject(reason)
@@ -56,13 +56,30 @@ export class DomainCrawl implements IDomainCrawl {
         })
     }
 
-    private async crawlByStartPage(url) {
-     const res = await axios.get(url);
-     const links = getHrefs(res.data);
+    private async crawlByStartPage(domain: Domain) {
+        const res = await axios.get(domain.id);
+        const linksFirstLevel = getHrefs(res.data);
 
-     console.log('links', links);
+        let linksSecondLevel = [];
 
-     return links;
+        for (const link of linksFirstLevel) {
+            if(link && link.match(domain.productRegExp)) {
+                const res = await axios.get(`${domain.coreLink}/${link}`);
+                linksSecondLevel.push(...getHrefs(res.data));
+            }
+        }
+
+        const resultLinks = [...linksFirstLevel, ...linksSecondLevel];
+
+        var uniqueLinks = [];
+        
+        for(let i=0; i < resultLinks.length; i++){
+            if(uniqueLinks.indexOf(resultLinks[i]) === -1) {
+                uniqueLinks.push(resultLinks[i]);
+            }
+        }
+
+        return uniqueLinks;
     }
 
 

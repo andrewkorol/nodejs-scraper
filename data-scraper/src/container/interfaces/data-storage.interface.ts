@@ -9,7 +9,7 @@ export interface IDataStorage {
 
     getDomains(): Promise<Domain[]>
 
-    updateDomainLinks(links: Link[], domain: string): Promise<void>
+    updateDomainLinks(links: Link[], domain: Domain): Promise<void>
 
     updateDomainLink(link: string, html: string): Promise<void>
 

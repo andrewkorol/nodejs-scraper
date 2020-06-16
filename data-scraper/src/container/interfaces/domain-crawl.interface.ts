@@ -1,3 +1,5 @@
+import { Domain } from "../../entities";
+
 export interface IDomainCrawl {
-    crawl(url: string): void;
+    crawl(domain: Domain): void;
 }

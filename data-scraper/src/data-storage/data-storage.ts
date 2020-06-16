@@ -81,7 +81,7 @@ export class DataStorage implements IDataStorage {
 
         const repositoryLink = this.connection.getRepository(Link);
         let link = await repositoryLink.findOne(entity.id);
-        
+
         if(!link) {
             return;
         }
@@ -93,30 +93,28 @@ export class DataStorage implements IDataStorage {
         await repositoryLink.save(link);
     }
 
-    public async updateDomainLinks(links: Link[], domain: string): Promise<void> {
+    public async updateDomainLinks(links: Link[], domain: Domain): Promise<void> {
         await this.init();
 
-        const domainsRepository = this.connection.getRepository(Domain);
-        const domainEntity = await domainsRepository.findOne(domain);
-
-        links = links.filter(link => link.id.match(domainEntity.productRegExp));
+        links = links.filter((link, pos) => link.id.match(domain.productRegExp) && links.indexOf(link) === pos);
 
         links.forEach((link: Link) => { 
             if ( !(link.id.startsWith('http')) ) {
-                link.id = `${domainEntity.coreLink}/${link.id}`;
+                link.id = `${domain.coreLink}/${link.id}`;
             }
 
-            link.domain = domainEntity;
+            link.domain = domain;
             link.updated = Date.now().toString();
         });
 
         const linksRepository = this.connection.getRepository(Link);
 
-        logger.info(`updating links for ${domain}`)
+        logger.info(`updating links for ${domain.id}`)
 
         try {
             await linksRepository.save(links)
         } catch (ex) {
+            console.log(ex)
             logger.crit("Exception oqqured while run /'updateDomainLinks/': ", ex);
 
         }
@@ -124,6 +122,7 @@ export class DataStorage implements IDataStorage {
 
     public async updateDomainLink(link: string, html: string): Promise<void> {
         await this.init();
+
         const linksRepository = this.connection.getRepository(Link);
         let linkEntity = await linksRepository.findOne(link);
 
@@ -133,16 +132,17 @@ export class DataStorage implements IDataStorage {
             return;
         }
 
-        let htmlAsString = JSON.stringify(html);
+        // let htmlAsString = JSON.stringify(html);
 
-        linkEntity.html = htmlAsString;
+        linkEntity.html = html;
 
         logger.info(`inserting html for ${link}`);
 
         try {
             await linksRepository.save(linkEntity);
         } catch (ex) {
-            logger.crit("ERROR: ", ex);
+            console.log(ex);
+            logger.crit( ex);
         }
 
     }
