@@ -3,10 +3,11 @@ import { isNil } from "lodash";
 
 const axios = require('axios');
 
-import { Domain } from "../entities";
+import { Domain, Selector } from "../entities";
 import { DomainTechnologyEnum } from "../helpers/domain-technology.enum"
 import { Source } from "../models/sources.model";
 import { IDomainTechnology } from "../container/interfaces";
+import { Mapper } from "../helpers/mappers/mapper";
 
 @injectable()
 export class DomainTechnology implements IDomainTechnology {
@@ -20,7 +21,18 @@ export class DomainTechnology implements IDomainTechnology {
             domain.productRegExp = source.productRegExp;
             domain.coreLink = source.coreLink;
 
-            const technology = await this.getDomainTechnology(domain.id);
+            if (source.selectors) {
+                domain.selector = Mapper.selectorToEntity(source.selectors);
+            }
+
+            console.log('before await', domain);
+            let technology;
+            try {
+                technology = await this.getDomainTechnology(domain.id);
+            } catch (ex) {
+                console.log(ex);
+            }
+            
             domain.technology = technology ? technology : DomainTechnologyEnum.OTHER;
             domain.updated = Date.now().toString();
 

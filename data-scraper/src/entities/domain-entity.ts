@@ -1,6 +1,7 @@
-import { Entity, Column, PrimaryColumn, ManyToOne, OneToMany } from "typeorm";
+import { Entity, Column, PrimaryColumn, ManyToOne, OneToMany, OneToOne, JoinColumn } from "typeorm";
 
 import { Link } from './link-entity';
+import { Selector } from "./selector-entity";
 
 @Entity()
 export class Domain {
@@ -21,4 +22,8 @@ export class Domain {
 
     @OneToMany(type => Link, link => link.domain)
     links: Link[];
+
+    @OneToOne(type => Selector)
+    @JoinColumn()
+    selector: Selector;
 }

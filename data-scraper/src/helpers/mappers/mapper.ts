@@ -2,6 +2,8 @@ import { Product } from '../../entities/product-entity';
 import { OpenGraphModel } from '../../models/open-graph.model';
 import { Domain } from '../../entities/domain-entity';
 import { Link } from '../../entities/link-entity';
+import { Selectors } from '../../models/sources.model';
+import { Selector } from '../../entities';
 
 export class Mapper {
     public static OGModelToEntity(source: OpenGraphModel, outEntity): void {
@@ -42,5 +44,21 @@ export class Mapper {
         })
 
         return links;
+    }
+
+    public static selectorToEntity(selectors: Selectors) {
+        const selector = new Selector();
+
+        selector.name = JSON.stringify(selectors.name);
+        selector.available = JSON.stringify(selectors.available);
+        selector.brand = JSON.stringify(selectors.brand);
+        selector.currency = JSON.stringify(selectors.currency);
+        selector.description = JSON.stringify(selectors.description);
+        selector.images = JSON.stringify(selectors.images);
+        selector.options = JSON.stringify(selectors.options);
+        selector.price = JSON.stringify(selectors.price);
+        selector.tags = JSON.stringify(selectors.tags);
+
+        return selector;
     }
 }

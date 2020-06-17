@@ -46,9 +46,18 @@ export class HtmlParseQueue implements IHtmlParseQueue {
             return ch.assertQueue(this.queueName).then(async (ok) => {
                 const messages = await this._dataStorage.getAllLinks();
 
-                messages.forEach((link) => {
-                    if(link.html && link.id) {
-                        return ch.sendToQueue(this.queueName, Buffer.from(JSON.stringify(link)));
+
+                messages.forEach(async(link) => {
+                    if(link.html && link.id && link.domain) {
+                        const selector = await this._dataStorage.getSelectors(link.domain.id);
+
+                        console.log('selector', selector);
+                        const message = {
+                            selector,
+                            link
+                        }
+
+                        return ch.sendToQueue(this.queueName, Buffer.from(JSON.stringify(message)));
                     }
                 })
             });
@@ -67,10 +76,12 @@ export class HtmlParseQueue implements IHtmlParseQueue {
                 return ch.consume(this.queueName, async (msg) => {
                     if (msg !== null) {
                         const messageContent = msg.content.toString();
-                        const link: Link = JSON.parse(messageContent);
+                        
+                        const message = JSON.parse(messageContent);
+                        console.log("message", message.selector);
                 
-                        if(link.html && link.id) {
-                            await this._parser.parse(link);
+                        if(message.link && message.link.html && message.link.id && message.link.domain) {
+                            await this._parser.parse(message);
                         }
 
                         ch.ack(msg);

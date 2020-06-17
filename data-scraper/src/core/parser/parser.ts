@@ -21,26 +21,13 @@ export class Parser implements IParser {
         this._dataStorage = dataStorage;
     }
 
-    public async parse(link: Link): Promise<void> {
-
-
-        // const $ = cheerio.load(JSON.parse(link.html))
- 
-        // const meta = $('meta[property]').map((i, el) => ({
-        //   property: $(el).attr('property'),
-        //   content: $(el).attr('content')
-        // })).get()
-         
-        // const result = parse(meta)
-
-        // console.log(JSON.stringify(result))
-
-        // const prodEntity = Mapper.OGModelToEntity(result.og)
-
+    public async parse(message): Promise<void> {
         const data = {
-            html: link.html,
-            url: link.id,
-            id: link.id,
+            html: message.link.html,
+            url: message.link.id,
+            id: message.link.id,
+            domain: message.link.domain.id,
+            selector: message.selector
         }
 
         // console.log('link info',data);

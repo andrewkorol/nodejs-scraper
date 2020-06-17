@@ -1,5 +1,6 @@
 import { Mapper } from "../../helpers/mappers/mapper";
 import { isEmpty } from "lodash"
+import { FieldSelector } from "../../models/sources.model";
 
 const cheerio = require('cheerio');
 const microdata = require('microdata-node');
@@ -15,6 +16,7 @@ export class ScrapeHtml {
         date.toISOString().split('T')[0] + ' ' + date.toTimeString().split(' ')[0];
 
         this.data = doc;
+        console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!+++++++++++========', this.data.selector);
         this.data.html = new Buffer(this.data.html).toString();
         this.product = {
             id: this.data.id,
@@ -42,7 +44,7 @@ export class ScrapeHtml {
     }
 
     cleanImageUrl(url) {
-        if(!url) {
+        if (!url) {
             return;
         }
         // console.log('cleaning ' + url);
@@ -147,9 +149,10 @@ export class ScrapeHtml {
 
                 const result = parse(meta);
 
-                if(result) {
+                if (result) {
                     Mapper.OGModelToEntity(result.og, this.product);
                 }
+
 
                 const micro = microdata.toJson(this.data.html, { base: 'http://www.example.com' });
 
@@ -189,7 +192,7 @@ export class ScrapeHtml {
                                 if (offer.properties.price) {
                                     this.product.price = this.cleanAmount(offer.properties.price[0]);
                                 }
-                                if (offer.properties.priceCurrency && !this.product.currency) {
+                                if (offer.properties.priceCurrency) {
                                     this.product.currency = this.cleanCurrency(offer.properties.priceCurrency[0]);
                                 }
 
@@ -356,11 +359,11 @@ export class ScrapeHtml {
                 }
 
                 var priceCurrency = $('[property=\'product:price:currency\']');
-                if (priceCurrency.length == 1 && !this.product.currency)
+                if (priceCurrency.length == 1)
                     this.product.currency = this.cleanCurrency(priceCurrency[0].attribs.content);
 
                 var priceCurrencyOg = $('[property=\'og:price:currency\']');
-                if (priceCurrencyOg.length == 1 && !this.product.currency)
+                if (priceCurrencyOg.length == 1)
                     this.product.currency = this.cleanCurrency(priceCurrencyOg[0].attribs.content);
 
                 if (typeof this.product.price === 'undefined' || !this.product.price) {
@@ -373,12 +376,11 @@ export class ScrapeHtml {
                             .text();
                         this.product.price = this.cleanAmount(priceString);
 
-                        if (!this.product.currency) {
-                            this.product.currency = this.cleanCurrency($('.woocommerce-Price-amount').first().clone()  //clone the element
-                                .children() //select all the children
-                                .first()   //remove all the children
-                                .text());
-                        }
+                        this.product.currency = this.cleanCurrency($('.woocommerce-Price-amount').first().clone()  //clone the element
+                            .children() //select all the children
+                            .first()   //remove all the children
+                            .text());
+
                     }
                 }
                 if (typeof this.product.price === 'undefined' || !this.product.price) {
@@ -393,14 +395,14 @@ export class ScrapeHtml {
                     if (priceProp.length > 0)
                         this.product.price = this.cleanAmount(priceProp[0].attribs.content);
                     var currencyProp = $('[itemprop=\'priceCurrency\']');
-                    if (currencyProp.length > 0 && !this.product.currency)
+                    if (currencyProp.length > 0)
                         this.product.currency = this.cleanCurrency(priceDifs.first().text());
                 }
 
 
                 if (typeof this.product.price === 'undefined' || !this.product.price) {
                     var priceDifs = $('div.productPrice');
-                    if (priceDifs.length > 0  && !this.product.currency) {
+                    if (priceDifs.length > 0) {
                         this.product.price = this.cleanAmount(priceDifs.first().text())
                         this.product.currency = this.cleanCurrency(priceDifs.first().text());
                     }
@@ -453,8 +455,44 @@ export class ScrapeHtml {
                 if (this.data.domain == "stinegoya.com") {
                     this.product.currency = "EUR";
                 }
+
+
+                if (this.data.selector) {
+                    for (let [key, value] of Object.entries(this.data.selector)) {
+                        console.log('KEEEYS', key, value);
+
+                        if (value && key !== 'id') {
+                            console.log('value: ', value);
+
+                            // going 
+                            const fieldSelector: FieldSelector = <FieldSelector>JSON.parse(<string>value);
+
+                            let result = $(fieldSelector.identifier)
+
+                            for (const method of fieldSelector.methods) {
+                                result = method.parameters ? result[method.name](method.parameters) : result[method.name]();
+                            }
+
+                            if (key === 'options') {
+                                const options = [];
+
+                                result.each((i, op) => {
+                                    options.push($(op).val());
+                                })
+
+                                this.product[key] = options;
+
+                                // get rid of break
+                                break;
+                            }
+
+                            this.product[key] = result;
+                        }
+                    }
+                }
             }
 
+            console.log(this.product);
             return this.product;
         }
     }

@@ -1,4 +1,4 @@
-import { Domain, Link, Product } from "../../entities";
+import { Domain, Link, Product, Selector } from "../../entities";
 
 import { Source } from '../../models/sources.model';
 
@@ -18,4 +18,6 @@ export interface IDataStorage {
     getLink(id: string): Promise<Link>
 
     updateProduct(entity: Product): Promise<void>
+
+    getSelectors(domainId: string): Promise<Selector> 
 }

@@ -4,7 +4,7 @@ import { injectable, inject } from "inversify";
 let logger = require('perfect-logger');
 
 //entities
-import { Product, Domain, Link } from "../entities"
+import { Product, Domain, Link, Selector } from "../entities"
 
 //interfaces
 import { IDataStorage, IDomainTechnology } from "../container/interfaces";
@@ -35,12 +35,21 @@ export class DataStorage implements IDataStorage {
     public async updateDomains(sources: Array<Source>): Promise<void> {
         await this.init();
 
-        const repository = this.connection.getRepository(Domain);
+        const repositoryDomain = this.connection.getRepository(Domain);
+        const repositorySources = this.connection.getRepository(Selector);
         const domains: Array<Domain> = await this._domainTechnology.getDomainEntities(sources);
+
+        for (const domain of domains) {
+            if (domain.selector) {
+                domain.selector.id = domain.id;
+
+                repositorySources.save(domain.selector)
+            }
+        }
 
         logger.info("Updating domains");
         try {
-            await repository.save(domains)
+            await repositoryDomain.save(domains)
         } catch (ex) {
             console.log(ex);
             logger.crit("Exception oqqured while run /'updateDomains/': ", ex);
@@ -52,7 +61,23 @@ export class DataStorage implements IDataStorage {
 
         const repositoryLink = this.connection.getRepository(Link);
 
-        return repositoryLink.find();
+        return repositoryLink.find({ relations: ["domain"] });
+    }
+
+    public async getSelectors(domainId: string): Promise<Selector> {
+        await this.init();
+
+        const repository = this.connection.getRepository(Domain);
+
+        const domainWithRelations = await repository.findOne({
+            where: {
+                id: domainId
+            },
+            relations: ["selector"]
+        });
+
+        return domainWithRelations.selector;
+
     }
 
     public async getLink(id: string): Promise<Link> {
@@ -82,7 +107,7 @@ export class DataStorage implements IDataStorage {
         const repositoryLink = this.connection.getRepository(Link);
         let link = await repositoryLink.findOne(entity.id);
 
-        if(!link) {
+        if (!link) {
             return;
         }
 
@@ -98,8 +123,8 @@ export class DataStorage implements IDataStorage {
 
         links = links.filter((link, pos) => link.id.match(domain.productRegExp) && links.indexOf(link) === pos);
 
-        links.forEach((link: Link) => { 
-            if ( !(link.id.startsWith('http')) ) {
+        links.forEach((link: Link) => {
+            if (!(link.id.startsWith('http'))) {
                 link.id = `${domain.coreLink}/${link.id}`;
             }
 
@@ -132,8 +157,6 @@ export class DataStorage implements IDataStorage {
             return;
         }
 
-        // let htmlAsString = JSON.stringify(html);
-
         linkEntity.html = html;
 
         logger.info(`inserting html for ${link}`);
@@ -142,7 +165,7 @@ export class DataStorage implements IDataStorage {
             await linksRepository.save(linkEntity);
         } catch (ex) {
             console.log(ex);
-            logger.crit( ex);
+            logger.crit(ex);
         }
 
     }

@@ -58,7 +58,7 @@ export class HtmlGrabQueue implements IHtmlGrabQueue {
             return conn.createChannel();
         }).then((ch) => {
             return ch.assertQueue(this.queueName).then((ok) => {
-                ch.prefetch(1);
+                ch.prefetch(20);
 
                 return ch.consume(this.queueName, async (msg) => {
                     if (msg !== null) {
@@ -78,14 +78,6 @@ export class HtmlGrabQueue implements IHtmlGrabQueue {
     public async collectHtml(link: string) {
         const res = await axios.get(link);
 
-        console.log(JSON.stringify(res.data));
-
         await this._dataStorage.updateDomainLink(link, JSON.stringify(res.data));
-
-
-        // request({ uri: link },
-        //     (error, response, body) => {
-
-        //     });
     }
 }
