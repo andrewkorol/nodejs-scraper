@@ -37,6 +37,7 @@ export class Parser implements IParser {
         product.options = JSON.stringify(product.options)
         product.tags = JSON.stringify(product.tags)
         product.images = JSON.stringify(product.images)
+        product.breadcrumps = JSON.stringify(product.breadcrumps)
 
         await this._dataStorage.updateProduct(product);
     }

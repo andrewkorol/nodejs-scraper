@@ -482,8 +482,24 @@ export class ScrapeHtml {
 
                                 this.product[key] = options;
 
-                                // get rid of break
-                                break;
+                                continue;
+                            }
+
+                            if (key === 'breadcrumps') {
+                                const breadcrumps = [];
+
+                                result.children().first().children().each((i, el) => {
+                                    const breadcrump = $(el).text();
+                                    if(breadcrump !== '') {
+                                        breadcrumps.push($(el).text());
+                                    }
+                                })
+
+                                this.product[key] = breadcrumps;
+
+                                console.log('breadcrumps', breadcrumps)
+
+                                continue;
                             }
 
                             this.product[key] = result;

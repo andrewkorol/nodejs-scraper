@@ -39,6 +39,9 @@ export class Product {
     @Column({ nullable: true })
     tags: string;
 
+    @Column({ nullable: true })
+    breadcrumps: string;
+
     @Column()
     updated: string;
 }

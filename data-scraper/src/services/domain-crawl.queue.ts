@@ -2,22 +2,16 @@ import { injectable, inject } from "inversify";
 import { IDataStorage, IDomainCrawlQueue, IDomainCrawl } from "../container/interfaces";
 import { TYPES } from "../container/inversify-helpers/TYPES";
 import { Domain } from "../entities";
+import { QueueConnectionsOptions } from '../helpers/queue-connection.settings'
 
 var amqp = require('amqplib');
 let logger = require('perfect-logger');
 
+// Queue that recieves domains from db, crawl all product links and stote it in 'Links' table
 @injectable()
 export class DomainCrawlQueue implements IDomainCrawlQueue {
     private readonly queueName = 'queue';
-    private options = {
-        protocol: 'amqp',
-        hostname: 'rabbit.twopointzero.eu',
-        port: 5672,
-        username: 'andrewkorol',
-        password: 'W#&nfR9$',
-        vhost: 'scraper',
-        heartbeat: 60,
-    };
+    private options = QueueConnectionsOptions
 
     private connection;
     private _dataStorage: IDataStorage;

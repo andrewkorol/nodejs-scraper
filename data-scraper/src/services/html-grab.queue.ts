@@ -1,5 +1,6 @@
 import { injectable, inject } from "inversify";
 import { IDataStorage, IDomainCrawlQueue, IDomainCrawl, IHtmlGrabQueue } from "../container/interfaces";
+import { QueueConnectionsOptions } from '../helpers/queue-connection.settings'
 import { TYPES } from "../container/inversify-helpers/TYPES";
 
 var amqp = require('amqplib');
@@ -7,18 +8,11 @@ const axios = require('axios');
 let logger = require('perfect-logger');
 var request = require("request");
 
+// Queue that collects html fron all links in 'Link' table and insertn it per each domain
 @injectable()
 export class HtmlGrabQueue implements IHtmlGrabQueue {
     private readonly queueName = 'html-queue';
-    private options = {
-        protocol: 'amqp',
-        hostname: 'rabbit.twopointzero.eu',
-        port: 5672,
-        username: 'andrewkorol',
-        password: 'W#&nfR9$',
-        vhost: 'scraper',
-        heartbeat: 60,
-    };
+    private options = QueueConnectionsOptions
 
     private connection;
     private _dataStorage: IDataStorage;

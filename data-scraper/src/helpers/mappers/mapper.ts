@@ -58,6 +58,7 @@ export class Mapper {
         selector.options = JSON.stringify(selectors.options);
         selector.price = JSON.stringify(selectors.price);
         selector.tags = JSON.stringify(selectors.tags);
+        selector.breadcrumps = JSON.stringify(selectors.breadcrumps);
 
         return selector;
     }

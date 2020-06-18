@@ -2,6 +2,7 @@ import { injectable, inject } from "inversify";
 import { IDataStorage, IHtmlGrabQueue, IParser } from "../container/interfaces";
 import { TYPES } from "../container/inversify-helpers/TYPES";
 import { IHtmlParseQueue } from "../container/interfaces/html-parser-queue.interface";
+import { QueueConnectionsOptions } from '../helpers/queue-connection.settings'
 import { Link } from "../entities";
 
 
@@ -9,18 +10,11 @@ let logger = require('perfect-logger');
 var amqp = require('amqplib');
 const axios = require('axios');
 
+//Queue thar receieves html from db and collects product information from it
 @injectable()
 export class HtmlParseQueue implements IHtmlParseQueue {
     private readonly queueName = 'parse-queue';
-    private options = {
-        protocol: 'amqp',
-        hostname: 'rabbit.twopointzero.eu',
-        port: 5672,
-        username: 'andrewkorol',
-        password: 'W#&nfR9$',
-        vhost: 'scraper',
-        heartbeat: 60,
-    };
+    private options = QueueConnectionsOptions
 
     private connection;
     private _dataStorage: IDataStorage;
@@ -45,7 +39,6 @@ export class HtmlParseQueue implements IHtmlParseQueue {
         }).then((ch) => {
             return ch.assertQueue(this.queueName).then(async (ok) => {
                 const messages = await this._dataStorage.getAllLinks();
-
 
                 messages.forEach(async(link) => {
                     if(link.html && link.id && link.domain) {

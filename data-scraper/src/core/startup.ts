@@ -12,6 +12,7 @@ import { TYPES } from "../container/inversify-helpers/TYPES";
 import { SOURCES } from "../helpers/sources";
 import { IHtmlParseQueue } from "../container/interfaces/html-parser-queue.interface";
 
+// main class of the app
 @injectable()
 export class Startup implements IStartup {
     private _domainCrawlQueue: IDomainCrawlQueue;
@@ -29,11 +30,18 @@ export class Startup implements IStartup {
         this._htmlParseQueue = htmlParseQueue;
     }
 
+    //method that runs the app
     public async start(): Promise<void> {
+        // gets domains list from SOURCES constant and update domain table with it
         await this._dataStorage.updateDomains(SOURCES);
+
+        // runs collecting of prodict links from all domains in DB
         // this._domainCrawlQueue.fire();
+
+        // runs collecting html from product links
         // this._htmlGrabQueue.fire();
-        // this._htmlGrabQueue.collectHtml('https://scampi.se/artiklar/produkter/acapulco-canopy-marine-swimsuit');
+
+        // runs collecting products infirmation from all html's stored per each product link
         this._htmlParseQueue.fire();
     }
 }

@@ -32,4 +32,7 @@ export class Selector {
 
     @Column({ nullable: true })
     tags: string;
+
+    @Column({ nullable: true })
+    breadcrumps: string;
 }

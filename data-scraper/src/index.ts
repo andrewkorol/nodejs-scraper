@@ -19,6 +19,7 @@ logger.initialize('nodejs-parser', {
     customBannerHeaders: 'Logs for nodejs-parser'
 });
 
+// App's start point
 const startup = appContainer.get<IStartup>(TYPES.IStartup);
 startup.start();
 

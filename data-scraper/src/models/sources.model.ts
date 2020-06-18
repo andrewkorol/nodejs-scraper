@@ -15,6 +15,7 @@ export interface Selectors {
     price?: FieldSelector;
     currency?: FieldSelector;
     tags?: FieldSelector;
+    breadcrumps?: FieldSelector;
 }
 
 export interface FieldSelector {

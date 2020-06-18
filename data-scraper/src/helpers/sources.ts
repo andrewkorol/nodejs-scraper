@@ -1,5 +1,7 @@
 import { Source } from "../models/sources.model";
 
+
+// array of domains with some help options - check 'Source' interface
 export const SOURCES: Array<Source> = [
     // { domainUrl: 'https://nonahandbags.com', productRegExp: '.*/product' },
     // { domainUrl: 'https://www.aagestore.com', productRegExp: '.*/product' },
@@ -28,7 +30,20 @@ export const SOURCES: Array<Source> = [
             },
             options: {
                 identifier: '.variant-select-wrapper',
-                methods: [{ name: 'first' }, { name: 'children' }, { name: 'first' }, { name: 'find', parameters: 'option'} ]
+                methods: [{ name: 'first' }, { name: 'children' }, { name: 'first' }, { name: 'find', parameters: 'option' }]
+            },
+            breadcrumps: {
+                identifier: '.ProductItem-nav',
+                methods: [{ name: 'first' }]
+            }
+
+        }
+    },
+    {
+        domainUrl: 'https://deborahlyons.co.uk', productRegExp: '.*/product', selectors: {
+            breadcrumps: {
+                identifier: '.breadcrumbs_sec',
+                methods: [{ name: 'first' }]
             }
         }
     },
