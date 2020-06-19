@@ -6,7 +6,8 @@ const TYPES = {
     IStartup: Symbol.for("IStartup"),
     IHtmlGrabQueue: Symbol.for("IHtmlGrabQueue"),
     IParser: Symbol.for("IParser"),
-    IHtmlParseQueue: Symbol.for("IHtmlParseQueue")
+    IHtmlParseQueue: Symbol.for("IHtmlParseQueue"),
+    IStatistics: Symbol.for("IStatistics")
 };
 
 export { TYPES };

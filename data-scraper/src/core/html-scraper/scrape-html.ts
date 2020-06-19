@@ -16,7 +16,6 @@ export class ScrapeHtml {
         date.toISOString().split('T')[0] + ' ' + date.toTimeString().split(' ')[0];
 
         this.data = doc;
-        console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!+++++++++++========', this.data.selector);
         this.data.html = new Buffer(this.data.html).toString();
         this.product = {
             id: this.data.id,

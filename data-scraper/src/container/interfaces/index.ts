@@ -5,3 +5,4 @@ export * from './domain-crawl-queue.interface';
 export * from './startup.interface';
 export * from './html-grab-queue.interface'
 export * from './parser.interface'
+export * from './statistics.interfase'

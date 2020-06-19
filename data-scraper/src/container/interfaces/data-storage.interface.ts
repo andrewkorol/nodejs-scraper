@@ -20,4 +20,8 @@ export interface IDataStorage {
     updateProduct(entity: Product): Promise<void>
 
     getSelectors(domainId: string): Promise<Selector> 
+
+    getAllLinksWithProducts(): Promise<Link[]>
+
+    updateLinks(links: Link[]): Promise<void> 
 }

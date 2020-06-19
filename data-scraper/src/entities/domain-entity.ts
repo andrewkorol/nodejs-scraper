@@ -17,6 +17,9 @@ export class Domain {
     @Column({ nullable: true })
     productRegExp: string;
 
+    @Column({ nullable: true })
+    staistic: number;
+
     @Column()
     updated: string;
 

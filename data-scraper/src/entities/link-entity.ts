@@ -13,6 +13,9 @@ export class Link {
     })
     html: string;
 
+    @Column({ nullable: true })
+    staistic: number;
+
     @Column()
     updated: string;
 
