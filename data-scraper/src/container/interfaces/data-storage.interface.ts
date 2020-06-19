@@ -5,7 +5,9 @@ import { Source } from '../../models/sources.model';
 export interface IDataStorage {
     init(): Promise<void>
 
-    updateDomains(sources: Source[]): Promise<void>
+    updateDomainsFromSources(sources: Source[]): Promise<void>
+    
+    updateDomains(domains: Domain[]): Promise<void>
 
     getDomains(): Promise<Domain[]>
 

@@ -34,7 +34,8 @@ export class Parser implements IParser {
         const scrapeHtml = new ScrapeHtml(data);
         const product = scrapeHtml.getProduct();
 
-        product.options = JSON.stringify(product.options)
+        product.options = (product.options[0] === "" && product.options.length === 1)
+            || product.options.length === 0 ? null : JSON.stringify(product.options)
         product.tags = JSON.stringify(product.tags)
         product.images = JSON.stringify(product.images)
         product.breadcrumps = JSON.stringify(product.breadcrumps)

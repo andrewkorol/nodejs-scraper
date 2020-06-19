@@ -32,7 +32,7 @@ export class DataStorage implements IDataStorage {
         }
     }
 
-    public async updateDomains(sources: Array<Source>): Promise<void> {
+    public async updateDomainsFromSources(sources: Array<Source>): Promise<void> {
         await this.init();
 
         const repositoryDomain = this.connection.getRepository(Domain);
@@ -54,6 +54,14 @@ export class DataStorage implements IDataStorage {
             console.log(ex);
             logger.crit("Exception oqqured while run /'updateDomains/': ", ex);
         }
+    }
+
+    public async updateDomains(domains: Domain[]): Promise<void> {
+        await this.init();
+
+        const repositoryLink = this.connection.getRepository(Domain);
+
+        await repositoryLink.save(domains);
     }
 
     public async getAllLinks(): Promise<Link[]> {
@@ -110,7 +118,7 @@ export class DataStorage implements IDataStorage {
 
         const repository = this.connection.getRepository(Domain);
 
-        return repository.find();
+        return repository.find({ relations: ['links'] });
     }
 
     public async updateProduct(entity: Product): Promise<void> {

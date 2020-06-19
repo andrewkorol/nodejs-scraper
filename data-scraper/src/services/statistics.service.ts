@@ -1,4 +1,5 @@
 import { inject, injectable } from "inversify";
+import { groupBy } from "lodash";
 
 import { IDataStorage } from "../container/interfaces";
 import { TYPES } from "../container/inversify-helpers/types";
@@ -26,24 +27,26 @@ export class Statistics implements IStatistics {
 
             if (link.product) {
                 for (let [key, value] of Object.entries(link.product)) {
-        
 
                     if (value) {
-                        if(key === 'breadcrumps') {
-                            console.log(key, value);
-    
-                        }
                         notNullCount++;
                     }
                 }
             }
 
-            console.log(notNullCount, totalFieldsCount);
-
             link.staistic = notNullCount / totalFieldsCount * 100;
-            console.log(link.staistic);
         }
 
-        this._dataStorage.updateLinks(links)
+        await this._dataStorage.updateLinks(links)
+
+        const domains = await this._dataStorage.getDomains();
+
+        for (const domain of domains) {
+            const statistics = domain.links.map(link => link.staistic);
+
+            domain.staistic = statistics.reduce((a, b) => a + b, 0) / statistics.length;
+        }
+
+        this._dataStorage.updateDomains(domains);
     }
 }
