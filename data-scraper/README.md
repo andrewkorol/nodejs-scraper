@@ -14,13 +14,8 @@ Technologies used:
     NodeJs - i had some experiense with it and it's comfortable for such purpose;
     MySql DB - usefull open-source library with good performance;
 
-What was done:
-    Parsing given source sitemap, collecting products and scraping data for each product. Given collection 
-        inserts to MySql db without duplications;
-
-What goes to backlog:
-    Missed fields
-    Scraping data from all sources at the same time
-
-Notes: 
-1. To run parser with specific souce, add it to helpers/sources.ts array and insert it's index to the parce() method in index.ts file;
+How to use the app:
+1. Go to `startup.ts` file
+2. There in `start()` method you can find methods and queue you can work with. 
+3. There are comment describing that it performs above each item. Uncomment one of them, save the changes and run `npm start` to make the things going :)
+4. You need to wait while one queue will process all messages before run next queue. You can watch the progrees for each queue here: http://rabbit.twopointzero.eu:15672/#/queues
