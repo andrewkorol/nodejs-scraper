@@ -4,7 +4,10 @@ import { injectable, inject } from "inversify";
 let logger = require('perfect-logger');
 
 //entities
-import { Product, Domain, Link, Selector } from "../entities"
+import { Product } from "../entities/product-entity"
+import { Domain } from "../entities/domain-entity"
+import { Link } from "../entities/link-entity"
+import { Selector } from "../entities/selector-entity"
 
 //interfaces
 import { IDataStorage, IDomainTechnology } from "../container/interfaces";
