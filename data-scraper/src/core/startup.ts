@@ -37,7 +37,7 @@ export class Startup implements IStartup {
     //method that runs the app
     public async start(): Promise<void> {
         // gets domains list from SOURCES constant and update domain table with it
-        // await this._dataStorage.updateDomains(SOURCES);
+        await this._dataStorage.updateDomainsFromSources(SOURCES);
 
         // runs collecting of prodict links from all domains in DB
         // this._domainCrawlQueue.fire();
