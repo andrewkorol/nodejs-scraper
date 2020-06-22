@@ -26,7 +26,22 @@ export class DataStorage implements IDataStorage {
 
     public async init(): Promise<void> {
         try {
-            this.connection = await createConnection();
+            this.connection = await createConnection({
+                type: "mysql",
+                host: "localhost",
+                port: 3306,
+                username: "root",
+                password: "Qwerty12345!",
+                database: "parsedb",
+                synchronize: true,
+                logging: false,
+                entities: [
+                    Domain,
+                    Link,
+                    Product,
+                    Selector
+                ],
+            });
         } catch (ex) {
             this.connection = getConnection();
         }

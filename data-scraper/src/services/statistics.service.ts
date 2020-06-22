@@ -16,7 +16,7 @@ export class Statistics implements IStatistics {
     public async calculate() {
         const links = await this._dataStorage.getAllLinksWithProducts();
 
-        if (!links) {
+        if (!links.length) {
             return;
         }
 
