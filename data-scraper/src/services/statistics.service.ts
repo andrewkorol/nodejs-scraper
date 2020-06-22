@@ -2,7 +2,7 @@ import { inject, injectable } from "inversify";
 import { groupBy } from "lodash";
 
 import { IDataStorage } from "../container/interfaces";
-import { TYPES } from "../CONTAINER/INVERSIFY-HELPERS/TYPES";
+import { TYPES } from "../container/inversify-helpers/TYPES";
 import { IStatistics } from "../container/interfaces/statistics.interfase";
 
 @injectable()
