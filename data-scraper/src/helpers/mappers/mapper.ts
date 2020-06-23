@@ -3,7 +3,9 @@ import { OpenGraphModel } from '../../models/open-graph.model';
 import { Domain } from '../../entities/domain-entity';
 import { Link } from '../../entities/link-entity';
 import { Selectors } from '../../models/sources.model';
-import { Selector } from '../../entities';
+import { Selector, Image } from '../../entities';
+
+var md5 = require('md5');
 
 export class Mapper {
     public static OGModelToEntity(source: OpenGraphModel, outEntity): void {
@@ -61,5 +63,27 @@ export class Mapper {
         selector.breadcrumps = JSON.stringify(selectors.breadcrumps);
 
         return selector;
+    }
+
+    public static productImagesToEntity(images: string[]): Array<Image> {
+        let imagesEntities: Array<Image> = new Array<Image>();
+        console.log(images);
+
+        images.forEach((image) => {
+            if(!image.length) {
+                return;
+            }
+
+            let imageEntity: Image = new Image();
+
+            imageEntity.id = md5(image);
+            imageEntity.externalUrl = image;
+            imageEntity.productShot = false;
+            imageEntity.updated = Date.now().toString();
+
+            imagesEntities.push(imageEntity);
+        })
+
+        return imagesEntities;
     }
 }

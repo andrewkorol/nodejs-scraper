@@ -1,16 +1,11 @@
-import { Entity, Column, PrimaryColumn } from "typeorm";
+import { Entity, Column, PrimaryColumn, OneToMany } from "typeorm";
+import { Image } from "./image-entity";
 
 @Entity()
 export class Product {
 
     @PrimaryColumn()
     id: string;
-
-    @Column({
-        length: 1000,
-        nullable: true
-    })
-    images: string;
 
     @Column({
         length: 10000,
@@ -41,6 +36,9 @@ export class Product {
 
     @Column({ nullable: true })
     breadcrumps: string;
+
+    @OneToMany(type => Image, image => image.product)
+    images: Image[];
 
     @Column()
     updated: string;

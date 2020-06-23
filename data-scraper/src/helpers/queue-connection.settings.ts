@@ -5,5 +5,5 @@ export const QueueConnectionsOptions = {
     username: 'andrewkorol',
     password: 'W#&nfR9$',
     vhost: 'scraper',
-    heartbeat: 60,
+    heartbeat: 10,
 };

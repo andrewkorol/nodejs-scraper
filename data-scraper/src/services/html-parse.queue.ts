@@ -71,7 +71,6 @@ export class HtmlParseQueue implements IHtmlParseQueue {
                         const messageContent = msg.content.toString();
                         
                         const message = JSON.parse(messageContent);
-                        console.log("message", message.selector);
                 
                         if(message.link && message.link.html && message.link.id && message.link.domain) {
                             await this._parser.parse(message);

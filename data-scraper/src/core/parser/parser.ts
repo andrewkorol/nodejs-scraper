@@ -37,10 +37,13 @@ export class Parser implements IParser {
         product.options = (product.options[0] === "" && product.options.length === 1)
             || product.options.length === 0 ? null : JSON.stringify(product.options)
         product.tags = JSON.stringify(product.tags)
-        product.images = JSON.stringify(product.images)
         product.breadcrumps = JSON.stringify(product.breadcrumps)
 
-        await this._dataStorage.updateProduct(product);
+        const imagesAsEntities = Mapper.productImagesToEntity(product.images);
+
+        await this._dataStorage.updateImages(imagesAsEntities);
+
+        await this._dataStorage.updateProduct(product, imagesAsEntities);
     }
 }
 

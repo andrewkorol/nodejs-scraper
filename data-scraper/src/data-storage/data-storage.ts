@@ -17,6 +17,7 @@ import { Mapper } from "../helpers/mappers/mapper";
 import { TYPES } from "../container/inversify-helpers/TYPES";
 import { DomainTechnology } from "../services/domain-technology.service";
 import { Source } from "../models/sources.model";
+import { Image } from "../entities";
 
 @injectable()
 export class DataStorage implements IDataStorage {
@@ -29,22 +30,7 @@ export class DataStorage implements IDataStorage {
 
     public async init(): Promise<void> {
         try {
-            this.connection = await createConnection({
-                type: "mysql",
-                host: "localhost",
-                port: 3306,
-                username: "root",
-                password: "Qwerty12345!",
-                database: "parsedb",
-                synchronize: true,
-                logging: false,
-                entities: [
-                    Domain,
-                    Link,
-                    Product,
-                    Selector
-                ],
-            });
+            this.connection = await createConnection();
         } catch (ex) {
             this.connection = getConnection();
         }
@@ -80,6 +66,14 @@ export class DataStorage implements IDataStorage {
         const repositoryLink = this.connection.getRepository(Domain);
 
         await repositoryLink.save(domains);
+    }
+
+    public async updateImages(images: Image[]): Promise<void> {
+        await this.init();
+
+        const repositoryLink = this.connection.getRepository(Image);
+
+        await repositoryLink.save(images);
     }
 
     public async getAllLinks(): Promise<Link[]> {
@@ -139,11 +133,15 @@ export class DataStorage implements IDataStorage {
         return repository.find({ relations: ['links'] });
     }
 
-    public async updateProduct(entity: Product): Promise<void> {
+    public async updateProduct(entity: Product, images?: Image[]): Promise<void> {
         await this.init();
 
         const repositoryProduct = this.connection.getRepository(Product);
         entity.updated = Date.now().toString();
+
+        if(images) {
+            entity.images = images;
+        } 
 
         await repositoryProduct.save(entity);
 

@@ -35,15 +35,20 @@ export class HtmlGrabQueue implements IHtmlGrabQueue {
         this.connection.then(function (conn) {
             return conn.createChannel();
         }).then((ch) => {
-            return ch.assertQueue(this.queueName).then(async (ok) => {
+            return ch.assertQueue(this.queueName, {
+                durable: true
+            }).then(async (ok) => {
                 const messages = await this._dataStorage.getAllLinks();
 
                 messages.forEach((link) => {
-                    return ch.sendToQueue(this.queueName, Buffer.from(link.id));
+                    return ch.sendToQueue(this.queueName, Buffer.from(link.id), {
+                        persistent: true
+                    });
                 })
-            });
+            }).then(() => ch.close());
         }).catch((ex) => {
-            logger.crit("Exception oqqured while run /'produse/' in HtmlGrabQueue: ", ex);
+            logger.crit("Exception oqqured while run 'produse' in HtmlGrabQueue: ", ex);
+            console.log(ex)
         });
     }
 
@@ -51,15 +56,23 @@ export class HtmlGrabQueue implements IHtmlGrabQueue {
         this.connection.then(function (conn) {
             return conn.createChannel();
         }).then((ch) => {
-            return ch.assertQueue(this.queueName).then((ok) => {
-                ch.prefetch(20);
+            return ch.assertQueue(this.queueName, {
+                durable: true
+              }).then((ok) => {
+                ch.prefetch(30);
 
                 return ch.consume(this.queueName, async (msg) => {
                     if (msg !== null) {
                         const messageContent = msg.content.toString();
                         console.log(messageContent);
 
-                        await this.collectHtml(messageContent);
+                        try {
+                            await this.collectHtml(messageContent);
+
+                        } catch (ex) {
+                            console.log(ex)
+                        }
+
                         ch.ack(msg);
                     }
                 });

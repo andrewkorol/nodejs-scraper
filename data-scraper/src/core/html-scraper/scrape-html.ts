@@ -458,10 +458,7 @@ export class ScrapeHtml {
 
                 if (this.data.selector) {
                     for (let [key, value] of Object.entries(this.data.selector)) {
-                        console.log('KEEEYS', key, value);
-
                         if (value && key !== 'id') {
-                            console.log('value: ', value);
 
                             // going 
                             const fieldSelector: FieldSelector = <FieldSelector>JSON.parse(<string>value);
@@ -495,8 +492,6 @@ export class ScrapeHtml {
                                 })
 
                                 this.product[key] = breadcrumps;
-
-                                console.log('breadcrumps', breadcrumps)
 
                                 continue;
                             }
