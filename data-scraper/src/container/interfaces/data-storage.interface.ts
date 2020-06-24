@@ -28,4 +28,8 @@ export interface IDataStorage {
     updateLinks(links: Link[]): Promise<void> 
 
     updateImages(images: Image[]): Promise<void>
+
+    getAllImages(): Promise<Array<Image>>
+
+    updateImage(image: Image): Promise<void> 
 }

@@ -76,6 +76,22 @@ export class DataStorage implements IDataStorage {
         await repositoryLink.save(images);
     }
 
+    public async updateImage(image: Image): Promise<void> {
+        await this.init();
+
+        const repositoryLink = this.connection.getRepository(Image);
+
+        await repositoryLink.save(image);
+    }
+
+    public async getAllImages(): Promise<Array<Image>> {
+        await this.init();
+
+        const repositoryLink = this.connection.getRepository(Image);
+
+        return repositoryLink.find();
+    }
+
     public async getAllLinks(): Promise<Link[]> {
         await this.init();
 
