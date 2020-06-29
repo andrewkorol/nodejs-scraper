@@ -10,6 +10,7 @@ const TYPES = {
     IStatistics: Symbol.for("IStatistics"),
     IImageAnalyzeQueue: Symbol.for("IImageAnalyzeQueue"),
     IGoogleVision: Symbol.for("IGoogleVision"),
+    IDomainManagerService: Symbol.for("IDomainManagerService"),
 };
 
 export { TYPES };

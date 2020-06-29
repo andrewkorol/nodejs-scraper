@@ -44,16 +44,16 @@ export class Startup implements IStartup {
         // await this._dataStorage.updateDomainsFromSources(SOURCES);
 
         // runs collecting of prodict links from all domains in DB
-        // this._domainCrawlQueue.fire();
+        this._domainCrawlQueue.fire();
 
         // runs collecting html from product links
-        // this._htmlGrabQueue.fire();
+        this._htmlGrabQueue.fire();
 
         // runs collecting products infirmation from all html's stored per each product link
-        // this._htmlParseQueue.fire();
+        this._htmlParseQueue.fire();
 
-        this._imageAnalyzeQueue.fire();
-
+        // this._imageAnalyzeQueue.fire();
+        // this._imageAnalyzeQueue.test('https://static1.squarespace.com/static/5bf01f243c3a53612e1d39aa/5bf12d39cd836636ea510528/5e2b232aeee42a6835171019/1586437053749/?format=1500w');
 
         // this._statistics.calculate();
     }

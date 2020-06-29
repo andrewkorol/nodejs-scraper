@@ -8,3 +8,4 @@ export * from './parser.interface';
 export * from './statistics.interfase';
 export * from './image-analyze.interface';
 export * from './google-vision-queue.interface';
+export * from './domain-manager-service.interface';

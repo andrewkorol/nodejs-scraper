@@ -19,14 +19,11 @@ export class ImageAnalyzeQueue implements IImageAnalyzeQueue {
 
     private connection;
     private _dataStorage: IDataStorage;
-    private _parser: IParser;
     private _gv: IGoogleVision;
 
     constructor(@inject(TYPES.IDataStorage) dataStorage: IDataStorage,
-        @inject(TYPES.IParser) parser: IParser,
         @inject(TYPES.IGoogleVision) gv: IGoogleVision) {
         this._dataStorage = dataStorage;
-        this._parser = parser;
         this._gv = gv;
 
         this.connection = amqp.connect(this.options);
@@ -71,7 +68,6 @@ export class ImageAnalyzeQueue implements IImageAnalyzeQueue {
                         console.log(`analyzing ${image.externalUrl}`);
 
                         const labels = await this._gv.analyze(image.externalUrl);
-                        console.log(labels);
                         image.labels = JSON.stringify(labels);
 
                         await this._dataStorage.updateImage(image);
@@ -82,5 +78,9 @@ export class ImageAnalyzeQueue implements IImageAnalyzeQueue {
         }).catch((ex) => {
             logger.crit("Exception oqqured while run /'consume/' in HtmlParseQueue: ", ex);
         });
+    }
+
+    public test(url): void {
+        this._gv.analyze(url);
     }
 }

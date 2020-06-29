@@ -16,6 +16,9 @@ export class Link {
     @Column({ nullable: true })
     staistic: number;
 
+    @Column({ nullable: true })
+    unique: number;
+
     @Column()
     updated: string;
 
