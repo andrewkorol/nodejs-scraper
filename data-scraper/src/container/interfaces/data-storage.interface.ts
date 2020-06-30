@@ -23,6 +23,8 @@ export interface IDataStorage {
 
     getSelectors(domainId: string): Promise<Selector> 
 
+    getDomain(domainId: string): Promise<Domain>
+
     getAllLinksWithProducts(): Promise<Link[]>
 
     updateLinks(links: Link[]): Promise<void> 
@@ -32,4 +34,8 @@ export interface IDataStorage {
     getAllImages(): Promise<Array<Image>>
 
     updateImage(image: Image): Promise<void> 
+
+    getUniqueDomainWithRelations(): Promise<Domain>
+
+    saveDomain(domain: Domain): Promise<void> 
 }

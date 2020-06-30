@@ -1,8 +1,9 @@
 import { injectable, inject } from "inversify";
-import { IDataStorage, IDomainCrawlQueue, IDomainCrawl } from "../container/interfaces";
+import { IDataStorage, IDomainCrawlQueue, IDomainCrawl, IDomainManagerService } from "../container/interfaces";
 import { TYPES } from "../container/inversify-helpers/TYPES";
 import { Domain } from "../entities";
 import { QueueConnectionsOptions } from '../helpers/queue-connection.settings'
+import { AdvancedConsoleLogger } from "typeorm";
 
 var amqp = require('amqplib');
 let logger = require('perfect-logger');
@@ -16,11 +17,15 @@ export class DomainCrawlQueue implements IDomainCrawlQueue {
     private connection;
     private _dataStorage: IDataStorage;
     private _domainCrawl: IDomainCrawl;
+    private _domainManagerService: IDomainManagerService;
 
     constructor(@inject(TYPES.IDataStorage) dataStorage: IDataStorage,
-        @inject(TYPES.IDomainCrawl) domainCrawl: IDomainCrawl) {
+        @inject(TYPES.IDomainManagerService) domainManagerService: IDomainManagerService,
+        @inject(TYPES.IDomainCrawl) domainCrawl: IDomainCrawl,
+    ) {
         this._dataStorage = dataStorage;
         this._domainCrawl = domainCrawl;
+        this._domainManagerService = domainManagerService;
 
         this.connection = amqp.connect(this.options);
     }
@@ -35,15 +40,19 @@ export class DomainCrawlQueue implements IDomainCrawlQueue {
             return conn.createChannel();
         }).then((ch) => {
             return ch.assertQueue(this.queueName).then(async (ok) => {
-                const messages = await this._dataStorage.getDomains();
+                let messages;
 
-                messages.forEach((domain: Domain) => {    
-                    if(domain.id) {
+                messages = this._domainManagerService.hasUniqueDomain() ?
+                    this._domainManagerService.getUniqueDomain : await this._dataStorage.getDomains();
+
+                messages.forEach((domain: Domain) => {
+                    if (domain.id) {
                         return ch.sendToQueue(this.queueName, Buffer.from(JSON.stringify(domain)));
-                    }              
+                    }
                 })
             });
         }).catch((ex) => {
+            console.log(ex)
             logger.crit("Exception oqqured while run /'produse/' in DomainCrawlQueue: ", ex);
         });
     }
@@ -60,7 +69,7 @@ export class DomainCrawlQueue implements IDomainCrawlQueue {
                         const messageContent = msg.content.toString();
                         const message: Domain = JSON.parse(messageContent);
 
-                        if(message.id) {
+                        if (message.id) {
                             await this._domainCrawl.crawl(message);
                         }
 

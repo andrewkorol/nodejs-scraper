@@ -26,7 +26,7 @@ export class Parser implements IParser {
             html: message.link.html,
             url: message.link.id,
             id: message.link.id,
-            domain: message.link.domain.id,
+            domain: message.domainId,
             selector: message.selector
         }
 

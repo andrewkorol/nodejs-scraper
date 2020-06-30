@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify";
-import { IDataStorage, IDomainCrawlQueue, IDomainCrawl, IHtmlGrabQueue } from "../container/interfaces";
+import { IDataStorage, IDomainCrawlQueue, IDomainCrawl, IHtmlGrabQueue, IDomainManagerService } from "../container/interfaces";
 import { QueueConnectionsOptions } from '../helpers/queue-connection.settings'
 import { TYPES } from "../container/inversify-helpers/TYPES";
 
@@ -17,11 +17,14 @@ export class HtmlGrabQueue implements IHtmlGrabQueue {
     private connection;
     private _dataStorage: IDataStorage;
     private _domainCrawl: IDomainCrawl;
+    private _domainManagerService: IDomainManagerService;
 
     constructor(@inject(TYPES.IDataStorage) dataStorage: IDataStorage,
+        @inject(TYPES.IDomainManagerService) domainManagerService: IDomainManagerService,
         @inject(TYPES.IDomainCrawl) domainCrawl: IDomainCrawl) {
         this._dataStorage = dataStorage;
         this._domainCrawl = domainCrawl;
+        this._domainManagerService = domainManagerService;
 
         this.connection = amqp.connect(this.options);
     }
@@ -38,7 +41,10 @@ export class HtmlGrabQueue implements IHtmlGrabQueue {
             return ch.assertQueue(this.queueName, {
                 durable: true
             }).then(async (ok) => {
-                const messages = await this._dataStorage.getAllLinks();
+                let messages;
+                const links = await this._domainManagerService.getUniqueDomainLinks();
+
+                messages = links ? links : await this._dataStorage.getAllLinks();
 
                 messages.forEach((link) => {
                     return ch.sendToQueue(this.queueName, Buffer.from(link.id), {
@@ -58,7 +64,7 @@ export class HtmlGrabQueue implements IHtmlGrabQueue {
         }).then((ch) => {
             return ch.assertQueue(this.queueName, {
                 durable: true
-              }).then((ok) => {
+            }).then((ok) => {
                 ch.prefetch(30);
 
                 return ch.consume(this.queueName, async (msg) => {

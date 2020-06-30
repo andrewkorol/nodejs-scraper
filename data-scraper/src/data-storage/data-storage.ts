@@ -84,6 +84,32 @@ export class DataStorage implements IDataStorage {
         await repositoryLink.save(image);
     }
 
+    public async getUniqueDomainWithRelations(): Promise<Domain> {
+        await this.init();
+
+        const repository = this.connection.getRepository(Domain);
+
+        return repository.findOne({
+            where: {
+                unique: true
+            },
+            join: {
+                alias: "domain",
+                leftJoinAndSelect: {
+                    "links": "domain.links",
+                }
+            }
+        });
+    }
+
+    public async saveDomain(domain: Domain): Promise<void> {
+        await this.init();
+        const domainRepository = this.connection.getRepository(Domain);
+
+        console.log('Updating unique domain');
+        await domainRepository.save(domain);
+    }
+
     public async getAllImages(): Promise<Array<Image>> {
         await this.init();
 
@@ -99,7 +125,6 @@ export class DataStorage implements IDataStorage {
 
         return repositoryLink.find({ relations: ["domain"] });
     }
-
 
     public async updateLinks(links: Link[]): Promise<void> {
         await this.init();
@@ -149,15 +174,26 @@ export class DataStorage implements IDataStorage {
         return repository.find({ relations: ['links'] });
     }
 
+    public async getDomain(domainId: string): Promise<Domain> {
+        await this.init();
+
+        const repository = this.connection.getRepository(Domain);
+
+        return repository.findOne({
+            where: {
+                id: domainId
+            }, relations: ['links'] });
+    }
+
     public async updateProduct(entity: Product, images?: Image[]): Promise<void> {
         await this.init();
 
         const repositoryProduct = this.connection.getRepository(Product);
         entity.updated = Date.now().toString();
 
-        if(images) {
+        if (images) {
             entity.images = images;
-        } 
+        }
 
         await repositoryProduct.save(entity);
 

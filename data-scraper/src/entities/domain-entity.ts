@@ -1,10 +1,10 @@
-import { Entity, Column, PrimaryColumn, ManyToOne, OneToMany, OneToOne, JoinColumn } from "typeorm";
+import { Entity, Column, PrimaryColumn, ManyToOne, OneToMany, OneToOne, JoinColumn, BaseEntity } from "typeorm";
 
 import { Link } from './link-entity';
 import { Selector } from "./selector-entity";
 
 @Entity()
-export class Domain {
+export class Domain  extends BaseEntity {
     @PrimaryColumn()
     id: string;
 
@@ -21,7 +21,7 @@ export class Domain {
     staistic: number;
 
     @Column({ nullable: true })
-    unique: number;
+    unique: boolean;
 
     @Column()
     updated: string;

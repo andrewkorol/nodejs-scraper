@@ -24,10 +24,10 @@ export const SOURCES: Array<Source> = [
     { domainUrl: 'https://www.aagestore.com', productRegExp: '.*/product' },
     {
         domainUrl: 'https://www.aperfectnomad.com', productRegExp: '.*/shop', selectors: {
-            currency: {
-                identifier: '.sqs-money-native',
-                methods: [{ name: 'before' }, { name: 'text' }]
-            },
+            // currency: {
+            //     identifier: '.sqs-money-native',
+            //     methods: [{ name: 'before' }, { name: 'text' }]
+            // },
             options: {
                 identifier: '.variant-select-wrapper',
                 methods: [{ name: 'first' }, { name: 'children' }, { name: 'first' }, { name: 'find', parameters: 'option' }]

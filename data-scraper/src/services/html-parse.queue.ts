@@ -1,5 +1,5 @@
 import { injectable, inject } from "inversify";
-import { IDataStorage, IHtmlGrabQueue, IParser } from "../container/interfaces";
+import { IDataStorage, IHtmlGrabQueue, IParser, IDomainManagerService } from "../container/interfaces";
 import { TYPES } from "../container/inversify-helpers/TYPES";
 import { IHtmlParseQueue } from "../container/interfaces/html-parser-queue.interface";
 import { QueueConnectionsOptions } from '../helpers/queue-connection.settings'
@@ -19,11 +19,14 @@ export class HtmlParseQueue implements IHtmlParseQueue {
     private connection;
     private _dataStorage: IDataStorage;
     private _parser: IParser;
+    private _domainManagerService: IDomainManagerService;
 
     constructor(@inject(TYPES.IDataStorage) dataStorage: IDataStorage,
+    @inject(TYPES.IDomainManagerService) domainManagerService: IDomainManagerService,
         @inject(TYPES.IParser) parser: IParser) {
         this._dataStorage = dataStorage;
         this._parser = parser;
+        this._domainManagerService = domainManagerService;
 
         this.connection = amqp.connect(this.options);
     }
@@ -38,16 +41,31 @@ export class HtmlParseQueue implements IHtmlParseQueue {
             return conn.createChannel();
         }).then((ch) => {
             return ch.assertQueue(this.queueName).then(async (ok) => {
-                const messages = await this._dataStorage.getAllLinks();
+                let messages;
+                const linksObj = await this._domainManagerService.getUniqueLinksDomainRelation();
 
-                messages.forEach(async(link) => {
-                    if(link.html && link.id && link.domain) {
-                        const selector = await this._dataStorage.getSelectors(link.domain.id);
+                console.log('linksObj', linksObj);
+                if(linksObj) {
+                    messages = linksObj;
+                } else {
+                    const links = await this._dataStorage.getAllLinks();
 
-                        console.log('selector', selector);
+                    messages = links.map((link) => {
+                        return {
+                            link,
+                            domainId: link.domain.id
+                        }
+                    });
+                }
+
+                messages.forEach(async(linkObj) => {
+                    if(linkObj.link && linkObj.link.html && linkObj.link.id && linkObj.domainId) {
+                        const selector = await this._dataStorage.getSelectors(linkObj.domainId);
+
                         const message = {
                             selector,
-                            link
+                            link: linkObj.link,
+                            domainId: linkObj.domainId
                         }
 
                         return ch.sendToQueue(this.queueName, Buffer.from(JSON.stringify(message)));
@@ -72,7 +90,7 @@ export class HtmlParseQueue implements IHtmlParseQueue {
                         
                         const message = JSON.parse(messageContent);
                 
-                        if(message.link && message.link.html && message.link.id && message.link.domain) {
+                        if(message.link && message.link.html && message.link.id && message.domainId) {
                             await this._parser.parse(message);
                         }
 

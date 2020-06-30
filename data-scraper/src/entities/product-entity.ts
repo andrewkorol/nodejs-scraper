@@ -37,6 +37,9 @@ export class Product {
     @Column({ nullable: true })
     breadcrumps: string;
 
+    @Column({ nullable: true })
+    unique: boolean;
+
     @OneToMany(type => Image, image => image.product)
     images: Image[];
 
