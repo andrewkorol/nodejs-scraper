@@ -19,7 +19,7 @@
       "get-hrefs": "^4.0.0",
       "image-downloader": "^4.0.1",
       "inversify": "^5.0.1",
-      "lodash": "^4.17.15",
+      "lodash": "^4.17.19",
       "md5": "^2.2.1",
       "microdata-node": "^2.0.0",
       "mysql": "^2.14.1",
